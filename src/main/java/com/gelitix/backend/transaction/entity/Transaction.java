@@ -1,7 +1,8 @@
 package com.gelitix.backend.transaction.entity;
 
-import com.gelitix.backend.user.entity.User;
+
 import com.gelitix.backend.order.entity.Order;
+import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @Column(name = "final_price")
     private Integer finalPrice;

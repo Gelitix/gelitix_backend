@@ -1,7 +1,7 @@
 package com.gelitix.backend.userPromo.entity;
 
 import com.gelitix.backend.promoDetail.entity.PromoDetail;
-import com.gelitix.backend.user.entity.User;
+import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,7 @@ public class UserPromo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "promo_details")

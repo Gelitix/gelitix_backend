@@ -1,7 +1,7 @@
 package com.gelitix.backend.review.entity;
 
-import com.gelitix.backend.user.entity.User;
 import com.gelitix.backend.order.entity.Order;
+import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")

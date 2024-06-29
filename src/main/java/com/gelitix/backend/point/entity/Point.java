@@ -1,6 +1,7 @@
 package com.gelitix.backend.point.entity;
 
-import com.gelitix.backend.user.entity.User;
+
+import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,11 +22,11 @@ public class Point {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invitee_id")
-    private User invitee;
+    private Users invitee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inviter_id")
-    private User inviter;
+    private Users inviter;
 
     @ColumnDefault("0")
     @Column(name = "points_history")

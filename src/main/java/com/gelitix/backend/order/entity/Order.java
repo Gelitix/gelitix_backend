@@ -1,7 +1,8 @@
 package com.gelitix.backend.order.entity;
 
 import com.gelitix.backend.event.entity.Event;
-import com.gelitix.backend.user.entity.User;
+
+import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +22,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @Column(name = "ticket_quantity")
     private Integer ticketQuantity;

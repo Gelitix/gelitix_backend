@@ -1,6 +1,7 @@
 package com.gelitix.backend.event.entity;
 
-import com.gelitix.backend.user.entity.User;
+
+import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -52,7 +53,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
