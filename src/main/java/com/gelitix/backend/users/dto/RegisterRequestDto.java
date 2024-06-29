@@ -19,12 +19,16 @@ public class RegisterRequestDto {
     @NotBlank(message = "Role is required")
     private String role;
 
+    @NotBlank (message = "Phone number is required")
+    private String phoneNumber;
+
     public Users toEntity() {
-        Users user = new Users();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setRole(role);
-        return user;
+        Users users = new Users();
+        users.setUsername(username);
+        users.setEmail(email);
+        users.setPassword(password);
+        users.setRole(role);
+        users.setPhoneNumber(phoneNumber);
+        return users;
     }
 }

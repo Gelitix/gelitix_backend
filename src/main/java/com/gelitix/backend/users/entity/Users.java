@@ -46,6 +46,9 @@ public class Users {
     @Column(name = "role", length = Integer.MAX_VALUE)
     private String role;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "referral_code", length = Integer.MAX_VALUE)
     private String referralCode;
 

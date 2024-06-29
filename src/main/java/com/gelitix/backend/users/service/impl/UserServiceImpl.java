@@ -1,9 +1,12 @@
 package com.gelitix.backend.users.service.impl;
 
+import com.gelitix.backend.response.Response;
+import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.repository.UserRepository;
 import com.gelitix.backend.users.service.UserService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +34,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public ProfileDto findProfileByUsername(String username) {
+        Optional<Users> currentProfile = userRepository.findByUsername(username);
+        if (currentProfile.isEmpty()) {
+            throw new IllegalArgumentException("Your account cannot be found");
+        }
+        Users user = currentProfile.get();
+        ProfileDto profileDto = new ProfileDto();
+        profileDto.setUsername(user.getUsername());
+        profileDto.setProfilePicture(user.getProfilePicture());
+        profileDto.setEmail(user.getEmail());
+        profileDto.setRole(user.getRole());
+
+        return profileDto;
     }
 
     @Override
@@ -47,8 +61,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users profile() {
-        // Implement the profile method logic
-        return null;
+    public Optional<Users> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
-}
+
+    @Override
+    public ProfileDto updateProfile(String username) {
+        Optional<Users> currentProfile = userRepository.findByUsername(username);
+        if (currentProfile.isEmpty()) {
+            throw new IllegalArgumentException("Your account cannot be found");
+        }
+        Users user = currentProfile.get();
+        ProfileDto profileDto = new ProfileDto();
+        profileDto.setUsername(user.getUsername());
+        profileDto.setProfilePicture(user.getProfilePicture());
+        profileDto.setEmail(user.getEmail());
+        profileDto.setRole(user.getRole());
+
+        return profileDto;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("Your account cannot be found");
+        }
+        userRepository.deleteById(id);
+        if (userRepository.existsById(id)) {
+            throw new IllegalArgumentException("Delete Action Failed");
+        }
+        }
+    }
+
+

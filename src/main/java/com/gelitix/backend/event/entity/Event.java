@@ -66,4 +66,6 @@ public class Event {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    @Column(name = "phone_number")
+    private String phoneNumber; //
 }
