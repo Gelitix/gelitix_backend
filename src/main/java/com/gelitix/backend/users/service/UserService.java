@@ -19,7 +19,7 @@ public interface UserService {
 
     Optional<Users> getUserByEmail(String email);
 
-    ProfileDto updateProfile(String username);
+    ProfileDto updateProfile(String username, ProfileDto profileDto);
 
     void deleteUser(Long id);
 }

@@ -66,13 +66,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ProfileDto updateProfile(String username) {
+    public ProfileDto updateProfile(String username, ProfileDto profileDto) {
         Optional<Users> currentProfile = userRepository.findByUsername(username);
         if (currentProfile.isEmpty()) {
             throw new IllegalArgumentException("Your account cannot be found");
         }
         Users user = currentProfile.get();
-        ProfileDto profileDto = new ProfileDto();
         profileDto.setUsername(user.getUsername());
         profileDto.setProfilePicture(user.getProfilePicture());
         profileDto.setEmail(user.getEmail());

@@ -63,7 +63,7 @@ public class UserController {
     @GetMapping("/findUserByEmail")
     public ResponseEntity<?> getUserByEmail(@RequestParam String email) {
         Optional<Users> user = userService.getUserByEmail(email);
-        return user.map(u ->Response.success(200, "ye", u)).orElseGet(() -> Response.failed("ye"));
+        return user.map(u ->Response.success(200, "User Found", u)).orElseGet(() -> Response.failed("User Not Found"));
     }
 
     @PutMapping("/update-profile")
@@ -73,7 +73,8 @@ public class UserController {
             return Response.failed("Unauthorized");
         }
         String username = authentication.getName();
-        ProfileDto updatedProfile = userService.updateProfile(username);
+        log.info(username);
+        ProfileDto updatedProfile = userService.updateProfile(username, profileDto);
         return Response.success("User updated successfully", updatedProfile);
     }
 
