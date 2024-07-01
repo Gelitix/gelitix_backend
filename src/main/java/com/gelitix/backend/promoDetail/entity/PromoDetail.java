@@ -1,6 +1,6 @@
 package com.gelitix.backend.promoDetail.entity;
 
-import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.event.entity.entity.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

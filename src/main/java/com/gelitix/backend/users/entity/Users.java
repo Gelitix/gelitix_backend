@@ -4,9 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.hibernate.annotations.ColumnDefault;
 
+
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -43,8 +47,9 @@ public class Users {
     @Column(name = "point_balance")
     private Integer pointBalance;
 
-    @Column(name = "role", length = Integer.MAX_VALUE)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 20)
+    private RoleName role;
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -63,6 +68,7 @@ public class Users {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
 
     @PrePersist
     public void prePersist() {

@@ -1,6 +1,8 @@
-package com.gelitix.backend.event.entity;
+package com.gelitix.backend.event.entity.entity;
 
 
+import com.gelitix.backend.eventCategory.entity.EventCategory;
+import com.gelitix.backend.eventLocation.entity.EventLocation;
 import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -68,4 +70,13 @@ public class Event {
 
     @Column(name = "phone_number")
     private String phoneNumber; //
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id")
+    private EventLocation location1;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_category_id")
+    private EventCategory eventCategory;
+
 }

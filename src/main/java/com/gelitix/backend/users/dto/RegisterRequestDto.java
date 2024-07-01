@@ -1,5 +1,6 @@
 package com.gelitix.backend.users.dto;
 
+import com.gelitix.backend.users.entity.RoleName;
 import com.gelitix.backend.users.entity.Users;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class RegisterRequestDto {
         users.setUsername(username);
         users.setEmail(email);
         users.setPassword(password);
-        users.setRole(role);
+        users.setRole(RoleName.fromString(role));
         users.setPhoneNumber(phoneNumber);
         return users;
     }

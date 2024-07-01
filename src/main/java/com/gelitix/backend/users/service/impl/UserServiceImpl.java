@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         profileDto.setUsername(user.getUsername());
         profileDto.setProfilePicture(user.getProfilePicture());
         profileDto.setEmail(user.getEmail());
-        profileDto.setRole(user.getRole());
+        profileDto.setRole(user.getRole().name());
 
         return profileDto;
     }
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         profileDto.setUsername(user.getUsername());
         profileDto.setProfilePicture(user.getProfilePicture());
         profileDto.setEmail(user.getEmail());
-        profileDto.setRole(user.getRole());
+        profileDto.setRole(user.getRole().name());
 
         return profileDto;
     }

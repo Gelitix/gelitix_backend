@@ -1,6 +1,6 @@
 package com.gelitix.backend.ticketType.entity;
 
-import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.event.entity.entity.Event;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

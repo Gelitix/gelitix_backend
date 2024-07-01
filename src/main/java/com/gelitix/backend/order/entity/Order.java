@@ -1,6 +1,6 @@
 package com.gelitix.backend.order.entity;
 
-import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.event.entity.entity.Event;
 
 import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
