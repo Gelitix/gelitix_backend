@@ -1,5 +1,7 @@
 package com.gelitix.backend.review.service.impl;
 
+import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.order.entity.Order;
 import com.gelitix.backend.review.dto.ReviewDto;
 import com.gelitix.backend.review.entity.Review;
 import com.gelitix.backend.review.repository.ReviewRepository;
@@ -7,6 +9,7 @@ import com.gelitix.backend.review.service.ReviewService;
 import com.gelitix.backend.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -19,20 +22,28 @@ public class ReviewServiceImpl implements ReviewService {
         this.userRepository = userRepository;
     }
 
+
     @Override
-    public ReviewDto addReview(String username, ReviewDto reviewDto) {
+    public ReviewDto addReview(String email, ReviewDto reviewDto, Order order, Event event) {
+        Instant eventDate = event.getDate();
+        String orderEmail = order.getUser().getEmail();
+        Instant now = Instant.now();
+        if(!email.equals(orderEmail) && now.isBefore(eventDate)) {
+            throw new IllegalArgumentException("You have to order this event first before reviewing it.");
+        }
+
         Review review = new Review();
         review.setName(reviewDto.getName());
         review.setFeedback(reviewDto.getFeedback());
         review.setRating(reviewDto.getRating());
         reviewRepository.save(review);
 
-        if(reviewRepository.findReviewByUserNameContains(username).equals(review)) {
-            throw new IllegalArgumentException("Something went wrong. Please enter your review again.");
-            }
-        if (reviewRepository.findReviewByUserNameContains(username).isEmpty()){
-            throw new IllegalArgumentException("Something went wrong. Please enter your review again.");
-        }
+//        if(reviewRepository.findByEmail(email).equals(review)) {
+//            throw new IllegalArgumentException("Something went wrong. Please enter your review again.");
+//            }
+//        if (reviewRepository.findByEmail(email).isEmpty()){
+//            throw new IllegalArgumentException("Something went wrong. Please enter your review again.");
+//        }
 
         ReviewDto response = new ReviewDto();
         response.setName(review.getName());
@@ -42,7 +53,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Optional<Review> findReview(String username) {
-        return reviewRepository.findReviewByUserNameContains(username);
+    public Optional<Review> findReview(String email) {
+        return reviewRepository.findByEmail(email);
     }
 }

@@ -11,7 +11,7 @@ public interface UserService {
 
     Users register(RegisterRequestDto user);
 
-    ProfileDto findProfileByUsername(String username);
+    ProfileDto findProfileByEmail(String email);
 
     Users findById(int id);
 
@@ -19,7 +19,7 @@ public interface UserService {
 
     Optional<Users> getUserByEmail(String email);
 
-    ProfileDto updateProfile(String username, ProfileDto profileDto);
+    ProfileDto updateProfile(String email, ProfileDto profileDto);
 
     void deleteUser(Long id);
 }

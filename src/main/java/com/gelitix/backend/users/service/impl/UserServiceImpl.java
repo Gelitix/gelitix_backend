@@ -1,6 +1,5 @@
 package com.gelitix.backend.users.service.impl;
 
-import com.gelitix.backend.point.entity.Point;
 import com.gelitix.backend.point.repository.PointRepository;
 import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.dto.ProfileDto;
@@ -53,8 +52,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ProfileDto findProfileByUsername(String username) {
-        Optional<Users> currentProfile = userRepository.findByUsername(username);
+    public ProfileDto findProfileByEmail(String email) {
+        Optional<Users> currentProfile = userRepository.findByEmail(email);
         if (currentProfile.isEmpty()) {
             throw new IllegalArgumentException("Your account cannot be found");
         }

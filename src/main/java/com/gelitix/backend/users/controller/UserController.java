@@ -1,5 +1,6 @@
 package com.gelitix.backend.users.controller;
 
+import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.response.Response;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
@@ -8,8 +9,6 @@ import com.gelitix.backend.users.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,13 +46,9 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<?> profile(ProfileDto profileDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Response.failed("Unauthorized");
-        }
-        String username = authentication.getName();
-        log.info("User profile requested for user: " + username);
-        ProfileDto user = userService.findProfileByUsername(username);
+        var claims = Claims.getClaimsFromJwt();
+        var email = (String) claims.get("sub");
+        ProfileDto user = userService.findProfileByEmail(email);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -68,22 +63,15 @@ public class UserController {
 
     @PutMapping("/update-profile")
     public ResponseEntity<?> updateProfile(@RequestBody ProfileDto profileDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Response.failed("Unauthorized");
-        }
-        String username = authentication.getName();
-        log.info(username);
-        ProfileDto updatedProfile = userService.updateProfile(username, profileDto);
+        var claims = Claims.getClaimsFromJwt();
+        var email = (String) claims.get("sub");
+
+        ProfileDto updatedProfile = userService.updateProfile(email, profileDto);
         return Response.success("User updated successfully", updatedProfile);
     }
 
     @DeleteMapping("/delete-profile")
     public ResponseEntity<?> deleteProfile(@PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Response.failed("Unauthorized");
-        }
         userService.deleteUser(id);
         return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }

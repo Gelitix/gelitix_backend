@@ -33,7 +33,6 @@ public class PointServiceImpl implements PointService {
         addedPoint.setInviter(inviter);
         addedPoint.setInvitee(invitee);
         addedPoint.setPointsHistory(pointAwarded);
-
         return pointRepository.save(addedPoint);
     }
 }

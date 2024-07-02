@@ -61,7 +61,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/auth/login").permitAll();
                     // You can add specific role access limiter like this one below
                     // auth.requestMatchers("api/v1/wallet/admin/**").hasRole("ADMIN");
-                    auth.anyRequest().permitAll();
+                    auth.anyRequest().authenticated();
                 })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt((jwt) -> jwt.decoder(jwtDecoder())))
