@@ -1,8 +1,8 @@
 package com.gelitix.backend.event.entity.entity;
 
-
 import com.gelitix.backend.eventCategory.entity.EventCategory;
 import com.gelitix.backend.eventLocation.entity.EventLocation;
+import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -12,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -43,19 +44,11 @@ public class Event {
     @Column(name = "organizer", length = Integer.MAX_VALUE)
     private String organizer;
 
-    @Size(max = 100)
-    @Column(name = "location", length = 100)
-    private String location;
-
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
     @Column(name = "is_free")
     private Boolean isFree;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private Users user;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
@@ -67,16 +60,19 @@ public class Event {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
-
-    @Column(name = "phone_number")
-    private String phoneNumber; //
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
-    private EventLocation location1;
+    private EventLocation location;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_category_id")
     private EventCategory eventCategory;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private Set<TicketType> ticketTypes;
 }
