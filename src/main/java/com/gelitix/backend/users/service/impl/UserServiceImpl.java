@@ -9,6 +9,8 @@ import com.gelitix.backend.users.repository.UserRepository;
 import com.gelitix.backend.users.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,10 +105,8 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("Your account cannot be found");
         }
-        userRepository.deleteById(id);
-        if (userRepository.existsById(id)) {
-            throw new IllegalArgumentException("Delete Action Failed");
-        }
+        Users currentUser = userRepository.findById(id).get();
+        currentUser.setDeletedAt(Instant.now());
         }
     }
 
