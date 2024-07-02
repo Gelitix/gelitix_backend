@@ -1,5 +1,6 @@
 package com.gelitix.backend.users.entity;
 
+import com.gelitix.backend.users.entity.userRoleEnum.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public class Users {
     private Integer pointBalance;
 
     @Column(name = "role", length = Integer.MAX_VALUE)
-    private String role;
+    private UserRole role;
 
     @Column(name = "phone_number")
     private String phoneNumber;

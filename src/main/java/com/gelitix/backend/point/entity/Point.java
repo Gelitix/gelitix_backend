@@ -18,7 +18,7 @@ public class Point {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "point_id_gen")
     @SequenceGenerator(name = "point_id_gen", sequenceName = "point_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invitee_id")

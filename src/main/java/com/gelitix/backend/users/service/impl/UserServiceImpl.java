@@ -1,15 +1,15 @@
 package com.gelitix.backend.users.service.impl;
 
-import com.gelitix.backend.response.Response;
+import com.gelitix.backend.point.entity.Point;
+import com.gelitix.backend.point.repository.PointRepository;
+import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.repository.UserRepository;
 import com.gelitix.backend.users.service.UserService;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -17,20 +17,39 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PointService pointService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, PointRepository pointRepository, PointService pointService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.pointService = pointService;
     }
 
     @Override
     public Users register(RegisterRequestDto user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            return null; // or throw an exception
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already used."); // or throw an exception
         }
         Users newUser = user.toEntity();
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(newUser);
+        newUser.setReferralCode(RandomStringGenerator.generateRandomString(6));
+        String referredCode= user.getReferredCode();
+        if (referredCode == null || referredCode.isEmpty()) {
+            return userRepository.save(newUser);
+        }
+
+        var uplineUserOpts = userRepository.findUserByReferralCode(referredCode);
+        if (uplineUserOpts.isEmpty()) {
+            throw new RuntimeException("Referred code not found.");
+        }
+        var uplineUser = uplineUserOpts.get();
+        int pointsAwarded =10000;
+        uplineUser.setPointBalance(uplineUser.getPointBalance() + pointsAwarded);
+        userRepository.save(uplineUser);
+        var savedUser = userRepository.save(newUser);
+        pointService.recordPointHistory(uplineUser,savedUser);
+
+        return savedUser;
     }
 
     @Override

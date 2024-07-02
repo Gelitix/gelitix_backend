@@ -1,25 +1,27 @@
 package com.gelitix.backend.users.dto;
 
+import com.gelitix.backend.users.entity.userRoleEnum.UserRole;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class ProfileDto {
-        @NotBlank(message = "Username is required")
+        @Nullable
         private String username;
 
-        @NotBlank(message = "Email is required")
+        @Nullable
         private String email;
 
-        @NotBlank(message = "Password is required")
+        @Nullable
         private String password;
 
-        @NotBlank(message = "Role is required")
-        private String role;
+        @Nullable
+        private UserRole role;
 
-        @NotBlank (message = "Phone number is required")
+        @Nullable
         private String phoneNumber;
 
-        @NotBlank
+        @Nullable
         private String profilePicture;
 }

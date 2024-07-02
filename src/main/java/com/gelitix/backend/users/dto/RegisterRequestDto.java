@@ -1,6 +1,8 @@
 package com.gelitix.backend.users.dto;
 
 import com.gelitix.backend.users.entity.Users;
+import com.gelitix.backend.users.entity.userRoleEnum.UserRole;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -17,10 +19,13 @@ public class RegisterRequestDto {
     private String password;
 
     @NotBlank(message = "Role is required")
-    private String role;
+    private UserRole role;
 
     @NotBlank (message = "Phone number is required")
     private String phoneNumber;
+
+    @Nullable
+    private String referredCode;
 
     public Users toEntity() {
         Users users = new Users();
