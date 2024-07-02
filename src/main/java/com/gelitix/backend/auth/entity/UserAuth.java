@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -25,7 +24,7 @@ public class UserAuth extends Users implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-            return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
+        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override

@@ -13,6 +13,8 @@ public interface UserService {
 
     ProfileDto findProfileByUsername(String username);
 
+    ProfileDto findProfileByEmail(String username);
+
     Users findById(int id);
 
     List<Users> findAll();

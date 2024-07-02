@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Log
 @Service
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl implements AuthService  {
 
     private final JwtEncoder jwtEncoder;
     private final PasswordEncoder passwordEncoder;
@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
 
-        String scope = authentication.getAuthorities()
+        String roles = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
@@ -41,12 +41,16 @@ public class AuthServiceImpl implements AuthService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(10, ChronoUnit.HOURS))
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
-                .claim("scope",scope)
+                .claim("roles",roles)
+                .claim("userId", userRepository.findByEmail(authentication.getName()).get().getId())
                 .build();
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        log.info("Token Requested for user : " + authentication.getName() + " with roles : " + roles);
+
+        var jwt = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return jwt;
     }
 
 

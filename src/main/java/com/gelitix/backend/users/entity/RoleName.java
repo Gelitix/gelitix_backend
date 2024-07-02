@@ -5,14 +5,14 @@ public enum RoleName {
     ROLE_EVENT_ORGANIZER;
 
 public static RoleName fromString(String role) {
-   switch (role.toUpperCase()){
+    switch (role.toUpperCase()){
         case "USER":
-        return ROLE_USER;
-            case "EVENT ORGANIZER":
-                    return ROLE_EVENT_ORGANIZER;
+            return ROLE_USER;
+        case "EVENT ORGANIZER":
+            return ROLE_EVENT_ORGANIZER;
 
-default:
-        throw new IllegalArgumentException("Unknown role: " + role);
-        }
-                }
-                }
+        default:
+            throw new IllegalArgumentException("Unknown role: " + role);
+    }
+}
+}

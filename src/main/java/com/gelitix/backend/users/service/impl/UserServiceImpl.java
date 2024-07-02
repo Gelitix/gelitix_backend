@@ -1,12 +1,12 @@
 package com.gelitix.backend.users.service.impl;
 
-import com.gelitix.backend.response.Response;
+
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.repository.UserRepository;
 import com.gelitix.backend.users.service.UserService;
-import org.springframework.context.annotation.Profile;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +36,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public ProfileDto findProfileByUsername(String username) {
         Optional<Users> currentProfile = userRepository.findByUsername(username);
+        if (currentProfile.isEmpty()) {
+            throw new IllegalArgumentException("Your account cannot be found");
+        }
+        Users user = currentProfile.get();
+        ProfileDto profileDto = new ProfileDto();
+        profileDto.setUsername(user.getUsername());
+        profileDto.setProfilePicture(user.getProfilePicture());
+        profileDto.setEmail(user.getEmail());
+        profileDto.setRole(user.getRole().name());
+
+        return profileDto;
+    }
+
+
+    @Override
+    public ProfileDto findProfileByEmail(String email) {
+        Optional<Users> currentProfile = userRepository.findByEmail(email);
         if (currentProfile.isEmpty()) {
             throw new IllegalArgumentException("Your account cannot be found");
         }

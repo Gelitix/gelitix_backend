@@ -1,21 +1,21 @@
 package com.gelitix.backend.users.controller;
 
+import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.response.Response;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
 import com.gelitix.backend.users.entity.RoleName;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.relation.Role;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,16 +55,12 @@ public class UserController {
         return Response.success("User registered successfully", user);
     }
 
+    @RolesAllowed({"ROLE_EVENT_ORGANIZER", "ROLE_USER"})
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER')")
-    public ResponseEntity<?> profile(ProfileDto profileDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Response.failed("Unauthorized");
-        }
-        String username = authentication.getName();
-        log.info("User profile requested for user: " + username);
-        ProfileDto user = userService.findProfileByUsername(username);
+    public ResponseEntity<?> profile() {
+        String email = Claims.getEmailFromJwt();
+        log.info("User profile requested for user: " + email);
+        ProfileDto user = userService.findProfileByEmail(email);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -72,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/findUserByEmail")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER') or hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getUserByEmail(@RequestParam String email) {
         Optional<Users> user = userService.getUserByEmail(email);
         return user.map(u -> Response.success(200, "User Found", u))
@@ -80,7 +76,7 @@ public class UserController {
     }
 
     @PutMapping("/update-profile")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER')")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER')")
     public ResponseEntity<?> updateProfile(@RequestBody ProfileDto profileDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -93,7 +89,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete-profile/{id}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER')")
+//    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_EVENT_ORGANIZER')")
     public ResponseEntity<?> deleteProfile(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -102,7 +98,4 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }
-
-
-
 }
