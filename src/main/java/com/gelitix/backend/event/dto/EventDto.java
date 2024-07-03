@@ -1,4 +1,4 @@
-package com.gelitix.backend.event.entity.dto;
+package com.gelitix.backend.event.dto;
 
 import com.gelitix.backend.ticketType.dto.TicketTypeDto;
 import lombok.Data;

@@ -1,17 +1,19 @@
 package com.gelitix.backend.promoDetail.entity;
 
-import com.gelitix.backend.event.entity.entity.Event;
+import com.gelitix.backend.event.entity.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 
 @Getter
 @Setter
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "promo_details")
 public class PromoDetail {
     @Id
@@ -35,7 +37,7 @@ public class PromoDetail {
     private Event event;
 
     @Column(name = "discount")
-    private Integer discount;
+    private Double discount;
 
     @Column(name = "start_valid")
     private Instant startValid;

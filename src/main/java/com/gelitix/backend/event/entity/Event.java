@@ -1,4 +1,4 @@
-package com.gelitix.backend.event.entity.entity;
+package com.gelitix.backend.event.entity;
 
 import com.gelitix.backend.eventCategory.entity.EventCategory;
 import com.gelitix.backend.eventLocation.entity.EventLocation;

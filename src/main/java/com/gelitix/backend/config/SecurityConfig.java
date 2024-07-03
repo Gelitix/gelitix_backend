@@ -41,8 +41,7 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
 
     public SecurityConfig(RsaKeyConfigProperties rsaKeyConfigProperties, UserDetailsServiceImpl userDetailsService) {
-        this.rsaKeyConfigProperties = rsaKeyCon
-    figProperties;
+        this.rsaKeyConfigProperties = rsaKeyConfigProperties;
         this.userDetailsService = userDetailsService;
     }
 

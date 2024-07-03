@@ -1,10 +1,12 @@
 package com.gelitix.backend.users.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+
 import java.time.Instant;
 
 @Getter
@@ -46,6 +48,10 @@ public class Users {
     @Column(name = "role", length = 20)
     private RoleName role;
 
+//    @Column(name = "role", length = 20)
+//    @NotBlank(message = "Role is required")
+//    private String role;  // Keep as String
+
     @Column(name = "phone_number")
     private String phoneNumber;
 
@@ -63,7 +69,6 @@ public class Users {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "deleted_at")
     private Instant deletedAt;
-
 
     @PrePersist
     public void prePersist() {

@@ -1,9 +1,9 @@
-package com.gelitix.backend.event.entity.service.impl;
+package com.gelitix.backend.event.service.impl;
 
-import com.gelitix.backend.event.entity.dto.EventDto;
-import com.gelitix.backend.event.entity.entity.Event;
-import com.gelitix.backend.event.entity.repository.EventRepository;
-import com.gelitix.backend.event.entity.service.EventService;
+import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.repository.EventRepository;
+import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.eventLocation.entity.EventLocation;
 import com.gelitix.backend.eventLocation.repository.EventLocationRepository;
 import com.gelitix.backend.ticketType.entity.TicketType;
