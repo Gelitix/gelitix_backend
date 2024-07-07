@@ -4,8 +4,8 @@ import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.order.entity.Order;
 import com.gelitix.backend.point.entity.Point;
 import com.gelitix.backend.review.entity.Review;
-import com.gelitix.backend.transaction.entity.Transaction;
-import com.gelitix.backend.userPromo.entity.UserPromo;
+//import com.gelitix.backend.transaction.entity.Transaction;
+//import com.gelitix.backend.userPromo.entity.UserPromo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -88,11 +88,11 @@ public class Users {
     @OneToMany(mappedBy = "user")
     private Set<Review> reviews = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<Transaction> transactions = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<UserPromo> userPromos = new LinkedHashSet<>();
+//    @OneToMany(mappedBy = "user")
+//    private Set<Transaction> transactions = new LinkedHashSet<>();
+//
+//    @OneToMany(mappedBy = "user")
+//    private Set<UserPromo> userPromos = new LinkedHashSet<>();
 
     @PrePersist
     public void prePersist() {

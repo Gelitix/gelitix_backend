@@ -16,7 +16,7 @@ public class CreateTicketTypeDto {
     private String name;
 
     @NotBlank @NotNull
-    private Double price;
+    private BigDecimal price;
 
     @NotBlank @NotNull
     private Integer quantity;

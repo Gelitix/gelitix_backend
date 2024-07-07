@@ -63,7 +63,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public Event updateEvent(Integer id, EventDto eventDto) {
+    public Event updateEvent(Long id, EventDto eventDto) {
         Event existingEvent = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
         mapDtoToEntity(eventDto, existingEvent);
         existingEvent.setUpdatedAt(Instant.now());
@@ -76,12 +76,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEventById(Integer id) {
+    public Event getEventById(Long id) {
+        if (eventRepository.findById(id).isEmpty())
+        {throw new IllegalArgumentException("No event found with id " + id);}
         return eventRepository.findById(id).orElse(null);
     }
 
     @Override
-    public void deleteEvent(Integer id) {
+    public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
     }
 
@@ -135,12 +137,8 @@ public class EventServiceImpl implements EventService {
         ticketTypeRepository.saveAll(ticketTypes);
     }
 
-    @Override
-    public Event findEventById(long id) {
-        if (eventRepository.findById(id).isEmpty())
-        {throw new IllegalArgumentException("No event found with id " + id);}
-        return eventRepository.findById(id).orElse(null);
-    }
+
+
 
 
 }

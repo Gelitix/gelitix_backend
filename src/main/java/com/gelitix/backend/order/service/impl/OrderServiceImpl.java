@@ -61,9 +61,9 @@ public class OrderServiceImpl implements OrderService {
         Long currentUserId = Long.valueOf(currentUser.getId());
         newOrder.setUser(userService.findById(currentUserId));
 
-        newOrder.setEvent(eventService.findEventById(createOrderDto.getEventId()));
+        newOrder.setEvent(eventService.getEventById(createOrderDto.getEventId()));
 
-        var discountPercentage= 0D;
+        BigDecimal discountPercentage = BigDecimal.ZERO;
         if (createOrderDto.getPromoId() != null){
         PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderDto.getPromoTypeId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
         newOrder.setPromo(chosenPromoDetail);
@@ -81,8 +81,8 @@ public class OrderServiceImpl implements OrderService {
         }
         ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderDto.getTicketQuantity());
 
-        Double discount = discountPercentage * chosenTicketType.getPrice();
-        newOrder.setFinal_price(BigDecimal.valueOf(chosenTicketType.getPrice()-discount));
+        BigDecimal discount = discountPercentage.multiply(chosenTicketType.getPrice()) ;
+        newOrder.setFinalPrice(chosenTicketType.getPrice().subtract(discount));
 
         orderRepository.save(newOrder);
 
@@ -99,8 +99,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public int countTotalRevenueByEvent(Long eventId) {
-        Event currentEvent = eventService.findEventById(eventId);
+    public BigDecimal countTotalRevenueByEvent(Long eventId) {
+        Event currentEvent = eventService.getEventById(eventId);
         if (currentEvent == null) {
             throw new IllegalArgumentException("Event not found with id: " + eventId);
         }
@@ -109,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<PeriodicalRevenueDao> findDailyRevenueByEventId(Long eventId) {
-        if(eventService.findEventById(eventId) == null){
+        if(eventService.getEventById(eventId) == null){
             throw new IllegalArgumentException("Event not found for id: " + eventId);
         }
         return findDailyRevenueByEventId(eventId);
@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<PeriodicalRevenueDao> findMonthlyRevenueByEventId(Long eventId) {
-        if(eventService.findEventById(eventId) == null){
+        if(eventService.getEventById(eventId) == null){
             throw new IllegalArgumentException("Event not found for id: " + eventId);
         }
         return findMonthlyRevenueByEventId(eventId);
@@ -125,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<PeriodicalRevenueDao> findYearlyRevenueByEventId(Long eventId) {
-        if(eventService.findEventById(eventId) == null){
+        if(eventService.getEventById(eventId) == null){
             throw new IllegalArgumentException("Event not found for id: " + eventId);
         }
         return findYearlyRevenueByEventId(eventId);

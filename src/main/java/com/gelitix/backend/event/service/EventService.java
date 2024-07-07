@@ -7,17 +7,16 @@ import java.util.List;
 
 public interface EventService {
 
-    Event getEventById(Integer id);
+    Event getEventById(Long id);
 
     Event createEvent(EventDto eventDTO);
 
     List<Event> getAllEvents();
 
-    Event updateEvent(Integer id, EventDto eventDto);
+    Event updateEvent(Long id, EventDto eventDto);
 
-    void deleteEvent(Integer id);
+    void deleteEvent(Long id);
 
     EventDto mapEntityToDto(Event event);
-
 
 }

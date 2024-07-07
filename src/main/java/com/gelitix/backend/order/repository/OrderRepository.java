@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long>
@@ -26,8 +27,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>
     boolean existsOrderWithReferralPromoForUser(@Param("userId") Long userId);
 
 
-    @Query ("SELECT o.event, SUM(o.final_price) FROM Order o WHERE o.event= :event")
-    int countTotalRevenueByEvent(@Param ("event")Event event);
+    @Query ("SELECT o.event, SUM(o.finalPrice) FROM Order o WHERE o.event= :event")
+    BigDecimal countTotalRevenueByEvent(@Param ("event")Event event);
 
     @Query(value = "SELECT DATE(o.created_at) as createdDate, SUM (o.final_price) as finalPrice " +
             "FROM orders o " +

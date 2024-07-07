@@ -42,7 +42,7 @@ public class EventController {
             return Response.failed("Unauthorized");
         }
         // Set the user ID from the authenticated user's claims
-        Integer userId = Claims.getUserIdFromJwt().intValue(); // Convert Long to Integer
+        Long userId = Claims.getUserIdFromJwt();
         eventDto.setUserId(userId);
 
         Event event = eventService.createEvent(eventDto);
@@ -50,7 +50,7 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEventById(@PathVariable Integer id) {
+    public ResponseEntity<?> getEventById(@PathVariable Long id) {
         Event event = eventService.getEventById(id);
         if (event != null) {
             return Response.success(200, "Event Found", eventService.mapEntityToDto(event));
@@ -61,14 +61,14 @@ public class EventController {
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @PutMapping("/{id}")
-    public ResponseEntity<EventDto> updateEvent(@PathVariable Integer id, @RequestBody EventDto eventDto) {
+    public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @RequestBody EventDto eventDto) {
         Event updatedEvent = eventService.updateEvent(id, eventDto);
         return ResponseEntity.ok(eventService.mapEntityToDto(updatedEvent));
     }
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @DeleteMapping("/delete-event/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable("id") Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted successfully");
     }

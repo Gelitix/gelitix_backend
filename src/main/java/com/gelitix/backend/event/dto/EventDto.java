@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class EventDto {
 
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "Event name is mandatory")
     private String name;
@@ -43,6 +43,6 @@ public class EventDto {
     @NotNull(message = "Ticket types are mandatory")
     private List<TicketTypeDto> ticketTypes;
 
-    private Integer userId;
+    private Long userId;
 
 }

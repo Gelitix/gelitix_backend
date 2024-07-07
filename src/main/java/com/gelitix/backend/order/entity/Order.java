@@ -45,7 +45,7 @@ public class Order {
     private PromoDetail promo;
 
     @Column(name = "final_price")
-    private Integer finalPrice;
+    private BigDecimal finalPrice;
 
     @OneToMany(mappedBy = "order")
     private Set<Review> reviews = new LinkedHashSet<>();

@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
@@ -37,7 +38,7 @@ public class PromoDetail {
     private Event event;
 
     @Column(name = "discount")
-    private Double discount;
+    private BigDecimal discount;
 
     @Column(name = "start_valid")
     private Instant startValid;

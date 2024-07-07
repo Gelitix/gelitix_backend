@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
@@ -24,7 +25,7 @@ public class CreatePromoDto {
     private Event event;
 
     @NotBlank
-    private Double discount;
+    private BigDecimal discount;
 
     @NotBlank
     private Instant startValid;

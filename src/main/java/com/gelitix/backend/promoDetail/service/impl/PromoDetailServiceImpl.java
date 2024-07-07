@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +48,8 @@ public class PromoDetailServiceImpl implements PromoDetailService {
     public PromoDetail addPromo(CreatePromoDto createPromoDto, Event event, Order order) {
         PromoDetail promoDetail = new PromoDetail();
         if (Boolean.TRUE.equals(createPromoDto.getIsReferral())){
-            promoDetail.setDiscount(0.1);
-        };
+            promoDetail.setDiscount(new BigDecimal("0.1"));
+        }
         promoDetail.setDiscount(createPromoDto.getDiscount());
         promoDetail.setName(createPromoDto.getName());
         promoDetail.setStartValid(createPromoDto.getStartValid());
@@ -68,7 +69,7 @@ public class PromoDetailServiceImpl implements PromoDetailService {
 
     @Override
     public List<PromoDetail> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId) {
-        Event currentEvent = eventService.findEventById(eventId);
+        Event currentEvent = eventService.getEventById(eventId);
         if(currentEvent.getIsFree()){
             log.info("Event {} is free. No promo details applicable.", eventId);
             return Collections.emptyList();
@@ -85,9 +86,9 @@ public class PromoDetailServiceImpl implements PromoDetailService {
 
     @Override
     public PromoDetail deletePromoDetailsbyEventId(Long id,String email) {
-        Optional<Users> currentUserOpts = userService.findUsersByEmail(email);
+        Optional<Users> currentUserOpts = userService.getUserByEmail(email);
         Users currentUser = currentUserOpts.get();
-        Users eventOrganizer = eventService.findEventById(id).getUser();
+        Users eventOrganizer = eventService.getEventById(id).getUser();
 
         if (currentUser == null || eventOrganizer == null) {
             throw new IllegalArgumentException("User Cannot Be Found " + id);

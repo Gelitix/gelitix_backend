@@ -25,9 +25,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public EventStatisticsDTO getEventStatistics(Long eventId, String email) {
-     String eventName =  eventService.findEventById(eventId).getName();
+     String eventName =  eventService.getEventById(eventId).getName();
      EventAttendeeCountDao eventAttendees = orderService.countAttendeesByEventId(eventId);
-     BigDecimal totalRevenuePerEvent = BigDecimal.valueOf(orderService.countTotalRevenueByEvent(eventId));
+     BigDecimal totalRevenuePerEvent = orderService.countTotalRevenueByEvent(eventId);
      List<PeriodicalRevenueDao> dailyRevenue = orderService.findDailyRevenueByEventId(eventId);
      List<PeriodicalRevenueDao> monthlyRevenue = orderService.findMonthlyRevenueByEventId(eventId);
      List<PeriodicalRevenueDao> yearlyRevenue = orderService.findYearlyRevenueByEventId(eventId);

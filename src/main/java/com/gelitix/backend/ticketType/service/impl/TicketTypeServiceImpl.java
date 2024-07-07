@@ -36,14 +36,14 @@ public class TicketTypeServiceImpl implements TicketTypeService {
 
     @Override
     public TicketType createTicketType(CreateTicketTypeDto createTicketTypeDto, Long eventId) {
-        Event currentEvent = eventService.findEventById(eventId);
+        Event currentEvent = eventService.getEventById(eventId);
         if (currentEvent == null) {throw new IllegalArgumentException("Event not found");}
         TicketType ticketType = new TicketType();
         ticketType.setEvent(currentEvent);
         ticketType.setName(createTicketTypeDto.getName());
         ticketType.setQuantity(createTicketTypeDto.getQuantity());
-        if (currentEvent.getIsFree()){
-            ticketType.setPrice((double) 0);
+        if (currentEvent.getIsFree()) {
+            ticketType.setPrice(BigDecimal.ZERO);
         }
         ticketType.setPrice(createTicketTypeDto.getPrice());
 
