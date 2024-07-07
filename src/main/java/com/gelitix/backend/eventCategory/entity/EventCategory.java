@@ -1,9 +1,13 @@
 package com.gelitix.backend.eventCategory.entity;
 
+import com.gelitix.backend.event.entity.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,5 +23,8 @@ public class EventCategory {
     @Size(max = 30)
     @Column(name = "name", length = 30)
     private String name;
+
+    @OneToMany(mappedBy = "eventCategory")
+    private Set<Event> events = new LinkedHashSet<>();
 
 }

@@ -1,5 +1,6 @@
 package com.gelitix.backend.eventCategory.controller;
 
+import com.gelitix.backend.eventCategory.dto.EventCategoryDto;
 import com.gelitix.backend.eventCategory.entity.EventCategory;
 import com.gelitix.backend.eventCategory.service.EventCategoryService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class EventCategoryController {
     }
 
     @GetMapping
-    public List<EventCategory> getAllEventCategories() {
+    public List<EventCategoryDto> getAllEventCategories() {
         return eventCategoryService.getAllEventCategories();
     }
 }

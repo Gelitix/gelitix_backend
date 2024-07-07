@@ -13,7 +13,7 @@ public interface UserService {
 
     ProfileDto findProfileByEmail(String email);
 
-    Users findById(Long id);
+    Users findById(Integer id);
 
     List<Users> findAll();
 
@@ -21,7 +21,5 @@ public interface UserService {
 
     ProfileDto updateProfile(String email, ProfileDto profileDto);
 
-    void deleteUser(Long id);
-
-    Optional<Users> findUsersByEmail(String email);
+    void deleteUser(Integer id);
 }

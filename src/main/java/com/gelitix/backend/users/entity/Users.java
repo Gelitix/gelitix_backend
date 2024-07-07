@@ -1,5 +1,11 @@
 package com.gelitix.backend.users.entity;
 
+import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.order.entity.Order;
+import com.gelitix.backend.point.entity.Point;
+import com.gelitix.backend.review.entity.Review;
+import com.gelitix.backend.transaction.entity.Transaction;
+import com.gelitix.backend.userPromo.entity.UserPromo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,6 +15,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -50,10 +58,6 @@ public class Users {
     @Column(name = "role", length = 20)
     private RoleName role;
 
-//    @Column(name = "role", length = 20)
-//    @NotBlank(message = "Role is required")
-//    private String role;  // Keep as String
-
     @Column(name = "phone_number")
     private String phoneNumber;
 
@@ -71,6 +75,24 @@ public class Users {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Event> events = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Order> orders = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "invitee")
+    private Set<Point> points = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Review> reviews = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Transaction> transactions = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<UserPromo> userPromos = new LinkedHashSet<>();
 
     @PrePersist
     public void prePersist() {

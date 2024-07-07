@@ -20,7 +20,6 @@ public class RegisterRequestDto {
     @NotBlank(message = "Password is required")
     private String password;
 
-
     @Enumerated(EnumType.STRING)
     private RoleName role;
 

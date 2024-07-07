@@ -1,9 +1,13 @@
 package com.gelitix.backend.eventLocation.entity;
 
+import com.gelitix.backend.event.entity.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,20 +24,7 @@ public class EventLocation {
     @Column(name = "name", length = 50)
     private String name;
 
-    // Getters and setters
-    public Integer getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "location")
+    private Set<Event> events = new LinkedHashSet<>();
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

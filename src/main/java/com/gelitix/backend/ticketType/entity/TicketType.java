@@ -1,19 +1,20 @@
 package com.gelitix.backend.ticketType.entity;
 
 import com.gelitix.backend.event.entity.Event;
+import com.gelitix.backend.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@SQLRestriction("deleted_at IS NULL")
 @Table(name = "ticket_type")
 public class TicketType {
     @Id
@@ -25,8 +26,8 @@ public class TicketType {
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "price")
-    private Double price;
+    @Column(name = "price", precision = 10, scale = 2)
+    private BigDecimal price;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -46,5 +47,8 @@ public class TicketType {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @OneToMany(mappedBy = "ticketType")
+    private Set<Order> orders = new LinkedHashSet<>();
 
 }

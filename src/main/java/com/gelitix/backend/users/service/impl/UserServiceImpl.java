@@ -74,9 +74,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users findById(Long id) {
-        Optional<Users> user = userRepository.findById(id);
-        return user.orElse(null); // or throw an exception
+    public Users findById(Integer id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -101,18 +100,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(Integer id) {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("Your account cannot be found");
         }
         Users currentUser = userRepository.findById(id).get();
         currentUser.setDeletedAt(Instant.now());
         }
-
-    @Override
-    public Optional<Users> findUsersByEmail(String email) {
-        return userRepository.findUserByEmail(email);
     }
-}
 
 
