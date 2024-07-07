@@ -1,5 +1,8 @@
 package com.gelitix.backend.ticketType.dto;
 
+import lombok.Data;
+
+@Data
 public class TicketTypeDto {
     private String name;
     private Double price;

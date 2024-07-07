@@ -2,12 +2,17 @@ package com.gelitix.backend.order.entity;
 
 import com.gelitix.backend.event.entity.Event;
 
+import com.gelitix.backend.promoDetail.entity.PromoDetail;
+import com.gelitix.backend.review.entity.Review;
+import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,11 +32,22 @@ public class Order {
     @Column(name = "ticket_quantity")
     private Integer ticketQuantity;
 
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_type")
+    private TicketType ticketType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promo_id")
+    private PromoDetail promo;
+
+    @Column(name = "final_price")
+    private Integer finalPrice;
+
+    @OneToMany(mappedBy = "order")
+    private Set<Review> reviews = new LinkedHashSet<>();
 
 }

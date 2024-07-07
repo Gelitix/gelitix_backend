@@ -2,20 +2,21 @@ package com.gelitix.backend.event.entity;
 
 import com.gelitix.backend.eventCategory.entity.EventCategory;
 import com.gelitix.backend.eventLocation.entity.EventLocation;
+import com.gelitix.backend.order.entity.Order;
+import com.gelitix.backend.promoDetail.entity.PromoDetail;
 import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.users.entity.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "event")
 public class Event {
@@ -75,4 +76,26 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private Set<TicketType> ticketTypes;
+
+    @OneToMany(mappedBy = "event")
+    private Set<Order> orders = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "event")
+    private Set<PromoDetail> promoDetails = new LinkedHashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
+    @PreRemove
+    public void preRemove() {
+        this.deletedAt = Instant.now();
+    }
 }

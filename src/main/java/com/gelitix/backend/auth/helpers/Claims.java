@@ -23,7 +23,7 @@ public class Claims {
     }
 
     public static String getEmailFromJwt() {
-        return (String) getClaimsFromJwt().get("sub"); // Assuming 'sub' is the username
+        return (String) getClaimsFromJwt().get("sub"); // Assuming 'sub' is the email
     }
 
     public static String getRoleFromJwt() {
@@ -37,5 +37,17 @@ public class Claims {
                     .orElse(null);
         }
         return null;
+    }
+
+    public static Long getUserIdFromJwt() {
+        Object userId = getClaimsFromJwt().get("userId");
+        if (userId instanceof Integer) {
+            return ((Integer) userId).longValue();
+        } else if (userId instanceof Long) {
+            return (Long) userId;
+        } else if (userId instanceof String) {
+            return Long.parseLong((String) userId);
+        }
+        throw new IllegalStateException("User ID not found in JWT");
     }
 }
