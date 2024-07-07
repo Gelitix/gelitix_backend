@@ -60,7 +60,7 @@ public class EventServiceImpl implements EventService {
         List<TicketType> ticketTypes = eventDto.getTicketTypes().stream().map(ticketTypeDto -> {
             TicketType ticketType = new TicketType();
             ticketType.setName(ticketTypeDto.getName());
-            ticketType.setPrice(BigDecimal.valueOf(ticketTypeDto.getPrice()));
+            ticketType.setPrice(ticketTypeDto.getPrice());
             ticketType.setQuantity(ticketTypeDto.getQuantity());
             ticketType.setEvent(savedEvent);
             return ticketType;
@@ -70,4 +70,13 @@ public class EventServiceImpl implements EventService {
 
         return event;
     }
+
+    @Override
+    public Event findEventById(long id) {
+        if (eventRepository.findById(id).isEmpty())
+        {throw new IllegalArgumentException("No event found with id " + id);}
+        return eventRepository.findById(id).orElse(null);
+    }
+
+
 }

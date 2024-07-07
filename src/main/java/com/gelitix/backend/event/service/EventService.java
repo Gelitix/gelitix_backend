@@ -6,4 +6,5 @@ import com.gelitix.backend.event.entity.Event;
 
 public interface EventService {
     Event createEvent(EventDto eventDTO);
+    Event findEventById(long id);
 }

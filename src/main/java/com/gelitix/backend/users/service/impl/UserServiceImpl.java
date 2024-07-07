@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users findById(int id) {
+    public Users findById(Long id) {
         Optional<Users> user = userRepository.findById(id);
         return user.orElse(null); // or throw an exception
     }
@@ -108,6 +108,11 @@ public class UserServiceImpl implements UserService {
         Users currentUser = userRepository.findById(id).get();
         currentUser.setDeletedAt(Instant.now());
         }
+
+    @Override
+    public Optional<Users> findUsersByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
+}
 
 

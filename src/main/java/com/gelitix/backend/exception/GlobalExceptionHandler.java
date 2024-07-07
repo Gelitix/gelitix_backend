@@ -21,4 +21,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleException(Exception ex) {
         return Response.failed("An unexpected error occurred");
     }
-}
+
+
+
+    }

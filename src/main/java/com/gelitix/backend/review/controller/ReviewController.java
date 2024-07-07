@@ -34,9 +34,7 @@ public class ReviewController {
 
     @GetMapping("/")
     public ResponseEntity<?> getAllReviews() {
-
         return Response.success(200, "Review has been fetched", reviewService.getAllReviews()
-
         );
     }
 }

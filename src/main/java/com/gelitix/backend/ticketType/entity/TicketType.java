@@ -4,12 +4,16 @@ import com.gelitix.backend.event.entity.Event;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Getter
 @Setter
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "ticket_type")
 public class TicketType {
     @Id
@@ -21,8 +25,8 @@ public class TicketType {
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
+    @Column(name = "price")
+    private Double price;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -30,5 +34,17 @@ public class TicketType {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
+
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 
 }

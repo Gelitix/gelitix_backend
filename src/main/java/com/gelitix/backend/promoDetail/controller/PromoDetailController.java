@@ -22,4 +22,21 @@ public class PromoDetailController {
         this.promoDetailService = promoDetailService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPromosDetailsbyEventId(@RequestParam("eventId") Long eventId) {
+        return Response.success(200, "This is the list:",promoDetailService.getPromoDetailsbyEventId(eventId));
+    }
+
+    @GetMapping("/{userId}/{eventId}")
+    public ResponseEntity<?> getPromoDetailsByUserIdAndEventId(@RequestParam("userId") Long userId, Long eventId) {
+        return Response.success(200, "This is the list:",promoDetailService.getPromoDetailsbyUserIdAndEventId(userId, eventId));
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<?> deletePromoDetailsByEventId(@RequestParam("eventId") Long eventId) {
+        var claims = Claims.getClaimsFromJwt();
+        var email = (String) claims.get("sub");
+        promoDetailService.deletePromoDetailsbyEventId(eventId, email);
+        return  Response.success("Your Promo Has Been Deleted");
+            }
 }

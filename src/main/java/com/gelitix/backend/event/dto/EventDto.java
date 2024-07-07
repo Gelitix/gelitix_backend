@@ -1,6 +1,6 @@
 package com.gelitix.backend.event.dto;
 
-import com.gelitix.backend.ticketType.dto.TicketTypeDto;
+import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
 import lombok.Data;
 import java.time.Instant;
 import java.util.List;
@@ -15,7 +15,7 @@ public class EventDto {
     private String description;
     private Boolean isFree;
 
-    private List<TicketTypeDto> ticketTypes;
+    private List<CreateTicketTypeDto> ticketTypes;
 
     // Getters and setters
     public String getName() {
@@ -75,11 +75,11 @@ public class EventDto {
     }
 
 
-    public List<TicketTypeDto> getTicketTypes() {
+    public List<CreateTicketTypeDto> getTicketTypes() {
         return ticketTypes;
     }
 
-    public void setTicketTypes(List<TicketTypeDto> ticketTypes) {
+    public void setTicketTypes(List<CreateTicketTypeDto> ticketTypes) {
         this.ticketTypes = ticketTypes;
     }
 }
