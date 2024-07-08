@@ -1,5 +1,8 @@
 package com.gelitix.backend.event.service.impl;
 
+
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
@@ -9,24 +12,24 @@ import com.gelitix.backend.eventCategory.entity.EventCategory;
 import com.gelitix.backend.eventCategory.repository.EventCategoryRepository;
 import com.gelitix.backend.eventLocation.entity.EventLocation;
 import com.gelitix.backend.eventLocation.repository.EventLocationRepository;
-import com.gelitix.backend.ticketType.dto.TicketTypeDto;
 import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.ticketType.repository.TicketTypeRepository;
 import com.gelitix.backend.ticketType.service.TicketTypeService;
-import com.gelitix.backend.users.dto.UserDto;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -36,14 +39,17 @@ public class EventServiceImpl implements EventService {
     private final EventCategoryRepository eventCategoryRepository;
     private final UserService userService;
     private final TicketTypeService ticketTypeService;
+    private final Cloudinary cloudinary;
 
-    public EventServiceImpl(EventRepository eventRepository, TicketTypeRepository ticketTypeRepository, EventLocationRepository eventLocationRepository, EventCategoryRepository eventCategoryRepository, UserService userService, @Lazy TicketTypeService ticketTypeService) {
+    public EventServiceImpl(EventRepository eventRepository, TicketTypeRepository ticketTypeRepository, EventLocationRepository eventLocationRepository, EventCategoryRepository eventCategoryRepository, UserService userService, @Lazy TicketTypeService ticketTypeService,Cloudinary cloudinary) {
         this.eventRepository = eventRepository;
         this.ticketTypeRepository = ticketTypeRepository;
         this.eventLocationRepository = eventLocationRepository;
         this.eventCategoryRepository = eventCategoryRepository;
         this.userService = userService;
         this.ticketTypeService = ticketTypeService;
+        this.cloudinary = cloudinary;
+
     }
 
     @Override
@@ -54,6 +60,17 @@ public class EventServiceImpl implements EventService {
         event.setCreatedAt(Instant.now());
         event.setUpdatedAt(Instant.now());
         event = eventRepository.save(event);
+
+        MultipartFile imageFile = eventDto.getImageUrl();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> uploadResult = cloudinary.uploader().upload(imageFile.getBytes(), ObjectUtils.emptyMap());
+                event.setPic((String) uploadResult.get("url"));
+            } catch (IOException e) {
+                throw new RuntimeException("Photo upload failed", e);
+            }
+        }
 
         System.out.println("Saved Event: " + event);
 //        saveTicketTypes(eventDto, event);
@@ -101,7 +118,7 @@ public class EventServiceImpl implements EventService {
         showEventResponseDto.setIsFree(currentEvent.getIsFree());
         showEventResponseDto.setUserId(currentEvent.getUser().getId());
 
-        TicketType currentTicketType= ticketTypeService.getTicketTypesByEvent(currentEvent);
+        List<TicketType> currentTicketType= ticketTypeService.getTicketTypesByEvent(currentEvent);
         showEventResponseDto.setTicketTypes(currentTicketType);
 
         return showEventResponseDto;

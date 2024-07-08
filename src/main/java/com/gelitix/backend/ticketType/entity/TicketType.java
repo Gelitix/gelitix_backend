@@ -1,5 +1,6 @@
 package com.gelitix.backend.ticketType.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.order.entity.Order;
 import jakarta.persistence.*;
@@ -32,6 +33,7 @@ public class TicketType {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;

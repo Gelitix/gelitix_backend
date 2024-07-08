@@ -58,11 +58,11 @@ public class TicketTypeServiceImpl implements TicketTypeService {
         currentTicketType.setDeletedAt(Instant.now());}
 
     @Override
-    public TicketType getTicketTypesByEvent(Event event) {
-     if (ticketTypeRepository.findByEvent(event) == null) {
+    public List<TicketType> getTicketTypesByEvent(Event event) {
+     if (ticketTypeRepository.findByEventId(event.getId()) == null) {
             throw new IllegalArgumentException("Ticket types for this event cannot be found");
         }
-        return ticketTypeRepository.findByEvent(event);
+        return ticketTypeRepository.findByEventId(event.getId());
     }
 
     @Override

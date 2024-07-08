@@ -12,6 +12,6 @@ public interface TicketTypeService {
     List<TicketType> getAllTicketTypes();
     TicketType createTicketType(CreateTicketTypeDto createTicketTypeDto, Long eventId);
     void deleteTicketType(Long id);
-    TicketType getTicketTypesByEvent (Event event);
+    List<TicketType> getTicketTypesByEvent (Event event);
     int deductTicketQuantity(TicketType boughtTicketType, int orderedTicketQuantity);
 }

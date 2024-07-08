@@ -2,15 +2,18 @@ package com.gelitix.backend.event.controller;
 
 import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.response.Response;
 import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.java.Log;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,23 +37,58 @@ public class EventController {
                 .collect(Collectors.toList());
     }
 
+//    @RolesAllowed("ROLE_EVENT_ORGANIZER")
+//    @PostMapping("/create-event")
+//    public ResponseEntity<?> createEvent(@RequestBody EventDto eventDto) {
+//        String role = Claims.getRoleFromJwt();
+//        if (role == null || !role.equals(RoleName.ROLE_EVENT_ORGANIZER.name())) {
+//            return Response.failed("Unauthorized");
+//        }
+//        // Set the user ID from the authenticated user's claims
+//        Long userId = Claims.getUserIdFromJwt();
+//        eventDto.setUserId(userId);
+//
+//        Event event = eventService.createEvent(eventDto);
+//        return ResponseEntity.ok(event);
+//    }
+
+//    @RolesAllowed("ROLE_EVENT_ORGANIZER")
+//    @PostMapping(value = "/create-event", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> createEvent(@RequestPart("eventDto") EventDto eventDto,
+//                                         @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+//        String role = Claims.getRoleFromJwt();
+//        if (role == null || !role.equals(RoleName.ROLE_EVENT_ORGANIZER.name())) {
+//            return Response.failed("Unauthorized");
+//        }
+//
+//        Long userId = Claims.getUserIdFromJwt();
+//        eventDto.setUserId(userId);
+//
+//        Event event = eventService.createEvent(eventDto);
+//        return ResponseEntity.ok(event);
+//    }
+
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
-    @PostMapping("/create-event")
-    public ResponseEntity<?> createEvent(@RequestBody EventDto eventDto) {
+    @PostMapping(value = "/create-event", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createEvent(@RequestPart("eventDto") EventDto eventDto,
+                                         @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         String role = Claims.getRoleFromJwt();
         if (role == null || !role.equals(RoleName.ROLE_EVENT_ORGANIZER.name())) {
             return Response.failed("Unauthorized");
         }
-        // Set the user ID from the authenticated user's claims
+
         Long userId = Claims.getUserIdFromJwt();
         eventDto.setUserId(userId);
+
+        // Set the image file in the EventDto
+        eventDto.setImageUrl(imageFile);
 
         Event event = eventService.createEvent(eventDto);
         return ResponseEntity.ok(event);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEventByIdResponseDto(@PathVariable Long id) {
+    public ResponseEntity<Response<GetEventByIdResponseDto>> getEventByIdResponseDto(@PathVariable Long id) {
         Event event = eventService.getEventById(id);
         if (event != null) {
             return Response.success(200, "Event Found", eventService.getEventByIdResponseDto(id));

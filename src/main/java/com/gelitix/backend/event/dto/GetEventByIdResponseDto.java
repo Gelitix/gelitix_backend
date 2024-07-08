@@ -30,7 +30,7 @@ public class GetEventByIdResponseDto {
 
     private Boolean isFree;
 
-    private TicketType ticketTypes;
+    private List<TicketType> ticketTypes;
 
     private Long userId;
 }

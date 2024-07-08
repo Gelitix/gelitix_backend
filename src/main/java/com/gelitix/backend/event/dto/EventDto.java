@@ -4,6 +4,7 @@ import com.gelitix.backend.ticketType.dto.TicketTypeDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -44,5 +45,7 @@ public class EventDto {
     private List<TicketTypeDto> ticketTypes;
 
     private Long userId;
+
+    private MultipartFile imageUrl;
 
 }
