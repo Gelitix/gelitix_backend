@@ -50,10 +50,10 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEventById(@PathVariable Long id) {
+    public ResponseEntity<?> getEventByIdResponseDto(@PathVariable Long id) {
         Event event = eventService.getEventById(id);
         if (event != null) {
-            return Response.success(200, "Event Found", eventService.mapEntityToDto(event));
+            return Response.success(200, "Event Found", eventService.getEventByIdResponseDto(id));
         } else {
             return Response.failed("Event Not Found");
         }

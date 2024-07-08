@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
         int pointsAwarded =10000;
         uplineUser.setPointBalance(uplineUser.getPointBalance() + pointsAwarded);
         userRepository.save(uplineUser);
+        newUser.setIsReferred(true);
         var savedUser = userRepository.save(newUser);
         pointService.recordPointHistory(uplineUser,savedUser);
 

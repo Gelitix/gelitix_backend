@@ -1,6 +1,7 @@
 package com.gelitix.backend.event.service;
 
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 
 import java.util.List;
@@ -18,5 +19,7 @@ public interface EventService {
     void deleteEvent(Long id);
 
     EventDto mapEntityToDto(Event event);
+
+    GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
 
 }

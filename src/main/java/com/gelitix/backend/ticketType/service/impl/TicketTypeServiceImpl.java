@@ -6,6 +6,7 @@ import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
 import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.ticketType.repository.TicketTypeRepository;
 import com.gelitix.backend.ticketType.service.TicketTypeService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ public class TicketTypeServiceImpl implements TicketTypeService {
     private final TicketTypeRepository ticketTypeRepository;
     private final EventService eventService;
 
-    public TicketTypeServiceImpl(TicketTypeRepository ticketTypeRepository, EventService eventService) {
+    public TicketTypeServiceImpl(TicketTypeRepository ticketTypeRepository, @Lazy EventService eventService) {
         this.ticketTypeRepository = ticketTypeRepository;
         this.eventService = eventService;
     }
