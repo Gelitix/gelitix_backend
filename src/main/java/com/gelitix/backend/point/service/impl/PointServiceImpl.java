@@ -8,6 +8,7 @@ import com.gelitix.backend.users.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class PointServiceImpl implements PointService {
         if (currentUser.isEmpty()) {
             throw new IllegalArgumentException("Invalid email");
         }
-        return pointRepository.findPointsByInviterId(Long.valueOf(currentUser.get().getId()));
+        return pointRepository.findPointsByInviterId(currentUser.get().getId());
     }
 
     @Override
@@ -37,8 +38,14 @@ public class PointServiceImpl implements PointService {
         Point addedPoint = new Point();
         addedPoint.setInviter(uplineUser);
         addedPoint.setInvitee(savedUser);
-        addedPoint.setPointsHistory(pointAwarded);
+        addedPoint.setPointsHistory(BigDecimal.valueOf(pointAwarded));
         return pointRepository.save(addedPoint);
+    }
+    @Override
+    public Point deductPointHistory(Users users, BigDecimal pointUsed){
+        Point deductedPoint = new Point();
+        deductedPoint.setPointsHistory(pointUsed.negate());
+        return pointRepository.save(deductedPoint);
     }
 
 }

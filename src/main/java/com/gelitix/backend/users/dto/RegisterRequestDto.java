@@ -29,8 +29,12 @@ public class RegisterRequestDto {
     @Nullable
     private String referredCode;
 
+    @NotBlank(message= "Name is required")
+    private String name;
+
     public Users toEntity() {
         Users users = new Users();
+        users.setName(name);
         users.setUsername(username);
         users.setEmail(email);
         users.setPassword(password);

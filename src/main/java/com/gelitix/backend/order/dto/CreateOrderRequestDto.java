@@ -1,17 +1,13 @@
 package com.gelitix.backend.order.dto;
 
-import com.gelitix.backend.event.entity.Event;
-import com.gelitix.backend.promoDetail.entity.PromoDetail;
-import com.gelitix.backend.users.entity.Users;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class CreateOrderDto {
+public class CreateOrderRequestDto {
     @NotBlank
     private Integer ticketQuantity;
 
@@ -26,4 +22,7 @@ public class CreateOrderDto {
 
     @Nullable
     private Long promoTypeId;
+
+    @Nullable
+    private BigDecimal pointUsed;
 }

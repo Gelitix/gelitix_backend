@@ -10,6 +10,7 @@ import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,20 +33,25 @@ public class EventController {
     }
 
     @GetMapping
-    public Page<EventDto> getAllEvents( @RequestParam(required = false) String eventCategory,
+    public ResponseEntity<?> getAllEvents( @RequestParam(required = false) String eventCategory,
                                         @RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size) {
-        Page<Event> eventPage = eventService.getAllEvents(eventCategory, PageRequest.of(page, size));
-        return eventPage.map(eventService::mapEntityToDto);
+                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(required = false, defaultValue = "id") String sort,
+                                        @RequestParam(required = false, defaultValue = "asc") String order) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Event> eventPage = eventService.getAllEvents(eventCategory, pageable, order, sort);
+        Page<EventDto> eventDtoPage = eventPage.map(eventService::mapEntityToDto);
+        return Response.success(200, "OK", eventDtoPage);
     }
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @PostMapping(value = "/create-event", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<EventDto> createEvent(@ModelAttribute EventDto eventDto,
-                                                @RequestParam(value = "image", required = false) MultipartFile imageFile) {
+    public ResponseEntity<?> createEvent(@RequestPart("eventDto") EventDto eventDto,
+                                         @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         String role = Claims.getRoleFromJwt();
         if (role == null || !role.equals(RoleName.ROLE_EVENT_ORGANIZER.name())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Response.failed("Unauthorized");
         }
 
         Long userId = Claims.getUserIdFromJwt();
@@ -79,10 +85,4 @@ public class EventController {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted successfully");
     }
-
-//    @GetMapping("/promo/{id}")
-//    public ResponseEntity<?> getEventByIdResponseDto(@PathVariable Long id) {
-//        return Response.success(200, "Event Found", eventService.getEventByIdResponseDto(id));
-//
-//    }
 }

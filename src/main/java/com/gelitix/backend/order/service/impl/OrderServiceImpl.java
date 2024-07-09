@@ -6,10 +6,12 @@ import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.order.dao.EventAttendeeCountDao;
 import com.gelitix.backend.order.dao.PeriodicalRevenueDao;
-import com.gelitix.backend.order.dto.CreateOrderDto;
+import com.gelitix.backend.order.dto.CreateOrderRequestDto;
+import com.gelitix.backend.order.dto.CreateOrderResponseDto;
 import com.gelitix.backend.order.entity.Order;
 import com.gelitix.backend.order.repository.OrderRepository;
 import com.gelitix.backend.order.service.OrderService;
+import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.promoDetail.entity.PromoDetail;
 import com.gelitix.backend.promoDetail.service.PromoDetailService;
 import com.gelitix.backend.ticketType.entity.TicketType;
@@ -30,13 +32,15 @@ public class OrderServiceImpl implements OrderService {
     private final EventService eventService;
     private final PromoDetailService promoDetailService;
     private final TicketTypeService ticketTypeService;
+    private final PointService pointService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserService userService, EventService eventService, EventRepository eventRepository,   @Lazy PromoDetailService promoDetailService, TicketTypeService ticketTypeService) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserService userService, EventService eventService, EventRepository eventRepository, @Lazy PromoDetailService promoDetailService, TicketTypeService ticketTypeService, PointService pointService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.eventService = eventService;
         this.promoDetailService = promoDetailService;
         this.ticketTypeService = ticketTypeService;
+        this.pointService = pointService;
     }
 
     @Override
@@ -49,52 +53,64 @@ public class OrderServiceImpl implements OrderService {
         if(promoDetailService.getPromoDetails(userId).isEmpty()){
             throw new IllegalArgumentException("User Cannot Be Found " + userId);
         }
-        return existsOrderWithReferralPromoForUser(userId);
+        return orderRepository.existsOrderWithReferralPromoForUser(userId);
     }
 
     @Override
-    public Order createOrder(CreateOrderDto createOrderDto, String email) {
+    public CreateOrderResponseDto createOrder(CreateOrderRequestDto createOrderRequestDto, String email) {
 
         Order newOrder = new Order();
 
         Optional<Users> currentUserOpts =userService.getUserByEmail(email);
         Users currentUser = currentUserOpts.get();
-        Long currentUserId = Long.valueOf(currentUser.getId());
+        Long currentUserId = currentUser.getId();
         newOrder.setUser(userService.findById(currentUserId));
 
-//        newOrder.setEvent(eventService.getEventById(createOrderDto.getEventId()));
-        EventDto eventDto = eventService.getEventById(createOrderDto.getEventId());
-        Event event = eventService.getEventEntityById(eventDto.getId());
-        newOrder.setEvent(event);
+        newOrder.setEvent(eventService.getEventEntityById(createOrderRequestDto.getEventId()));
 
         BigDecimal discountPercentage = BigDecimal.ZERO;
-        if (createOrderDto.getPromoId() != null){
-        PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderDto.getPromoTypeId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
+        if (createOrderRequestDto.getPromoId() != null){
+        PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderRequestDto.getPromoTypeId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
         newOrder.setPromo(chosenPromoDetail);
-            discountPercentage = newOrder.getPromo().getDiscount();
+        discountPercentage = newOrder.getPromo().getDiscount();
         }
 
-        Optional<TicketType> chosenTicketTypeOpts = ticketTypeService.getTicketTypeById(createOrderDto.getTicketTypeId());
+        Optional<TicketType> chosenTicketTypeOpts = ticketTypeService.getTicketTypeById(createOrderRequestDto.getTicketTypeId());
         TicketType chosenTicketType = chosenTicketTypeOpts.get();
         newOrder.setTicketType(chosenTicketType);
 
 
-        newOrder.setTicketQuantity(createOrderDto.getTicketQuantity());
+        newOrder.setTicketQuantity(createOrderRequestDto.getTicketQuantity());
         if (newOrder.getTicketQuantity() > chosenTicketType.getQuantity()) {
             throw new IllegalArgumentException("Ticket quantity exceeds available quantity.");
         }
-        ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderDto.getTicketQuantity());
+        ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderRequestDto.getTicketQuantity());
 
         BigDecimal discount = discountPercentage.multiply(chosenTicketType.getPrice()) ;
-        newOrder.setFinalPrice(chosenTicketType.getPrice().subtract(discount));
+        BigDecimal discountPrice = chosenTicketType.getPrice().subtract(discount);
+
+        if (createOrderRequestDto.getPointUsed() != null && createOrderRequestDto.getPointUsed().compareTo(currentUser.getPointBalance()) <= 0) {
+            newOrder.setFinalPrice(discountPrice.subtract(createOrderRequestDto.getPointUsed()));
+            pointService.deductPointHistory(currentUser, createOrderRequestDto.getPointUsed());
+            userService.deductPointBalance(currentUserId, createOrderRequestDto.getPointUsed());
+        }
 
         orderRepository.save(newOrder);
 
         int orderedTicketQuantity = newOrder.getTicketQuantity();
         ticketTypeService.deductTicketQuantity(chosenTicketType, orderedTicketQuantity);
 
-
-        return newOrder;
+        CreateOrderResponseDto createOrderResponse= new CreateOrderResponseDto();
+        createOrderResponse.setOrderId(newOrder.getId());
+        createOrderResponse.setUserName(newOrder.getUser().getUsername());
+        createOrderResponse.setEventName(newOrder.getEvent().getName());
+        createOrderResponse.setPromo(newOrder.getPromo().getName());
+        createOrderResponse.setTicketType(newOrder.getTicketType().getName());
+        createOrderResponse.setTicketQuantity(newOrder.getTicketQuantity());
+        createOrderResponse.setDiscountPercentage(discountPercentage);
+        createOrderResponse.setDiscountPrice(discountPrice);
+        createOrderResponse.setFinalPrice(newOrder.getFinalPrice());
+        return createOrderResponse;
     }
 
     @Override
@@ -103,39 +119,46 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public BigDecimal countTotalRevenueByEvent(Long eventId) {
-//        Event currentEvent = eventService.getEventById(eventId);
-        EventDto currentEventDto = eventService.getEventById(eventId);
-        if (currentEventDto == null) {
-            throw new IllegalArgumentException("Event not found with id: " + eventId);
+    public BigDecimal countTotalRevenueByEvent(Long userId) {
+        Users currentUser = userService.findById(userId);
+        if (currentUser == null) {
+            throw new IllegalArgumentException("Event not found with id: " + userId);
         }
-        Event currentEvent = eventService.getEventEntityById(currentEventDto.getId());
-
-        return orderRepository.countTotalRevenueByEvent(currentEvent);
+        return orderRepository.countTotalRevenueByEventMaker(userId);
     }
 
     @Override
-    public List<PeriodicalRevenueDao> findDailyRevenueByEventId(Long eventId) {
-        if(eventService.getEventById(eventId) == null){
-            throw new IllegalArgumentException("Event not found for id: " + eventId);
+    public List<PeriodicalRevenueDao> findDailyRevenueByEventMaker(Long userId) {
+        if(eventService.getEventById(userId) == null){
+            throw new IllegalArgumentException("Event not found for id: " + userId);
         }
-        return findDailyRevenueByEventId(eventId);
+        return orderRepository.findDailyRevenueByEventMaker(userId);
     }
 
     @Override
-    public List<PeriodicalRevenueDao> findMonthlyRevenueByEventId(Long eventId) {
+    public List<PeriodicalRevenueDao> findMonthlyRevenueByEventMaker(Long eventId) {
         if(eventService.getEventById(eventId) == null){
             throw new IllegalArgumentException("Event not found for id: " + eventId);
         }
-        return findMonthlyRevenueByEventId(eventId);
+        return orderRepository.findMonthlyRevenueByEventMaker(eventId);
     }
 
     @Override
-    public List<PeriodicalRevenueDao> findYearlyRevenueByEventId(Long eventId) {
+    public List<PeriodicalRevenueDao> findYearlyRevenueByEventMaker(Long eventId) {
         if(eventService.getEventById(eventId) == null){
             throw new IllegalArgumentException("Event not found for id: " + eventId);
         }
-        return findYearlyRevenueByEventId(eventId);
+        return orderRepository.findYearlyRevenueByEventMaker(eventId);
+    }
+
+    @Override
+    public Double countOrdersByUserId(Long userId) {
+        return orderRepository.countOrdersByUserId(userId);
+    }
+
+    @Override
+    public Double countUniqueCustomersByEventMaker(Long userId) {
+        return orderRepository.countUniqueCustomersByEventMaker(userId);
     }
 
 }

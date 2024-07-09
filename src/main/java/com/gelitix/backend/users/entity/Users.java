@@ -6,6 +6,7 @@ import com.gelitix.backend.point.entity.Point;
 import com.gelitix.backend.review.entity.Review;
 //import com.gelitix.backend.transaction.entity.Transaction;
 //import com.gelitix.backend.userPromo.entity.UserPromo;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -52,7 +54,7 @@ public class Users {
 
     @ColumnDefault("0")
     @Column(name = "point_balance")
-    private Integer pointBalance;
+    private BigDecimal pointBalance = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20)
@@ -110,4 +112,13 @@ public class Users {
         this.deletedAt = Instant.now();
     }
 
+    public BigDecimal getPointBalance() {
+        return pointBalance == null ? BigDecimal.ZERO : pointBalance;
+    }
+
+    public void setPointBalance(BigDecimal pointBalance) {
+        this.pointBalance = pointBalance;
+    }
 }
+
+

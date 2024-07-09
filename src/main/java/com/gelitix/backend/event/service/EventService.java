@@ -20,7 +20,7 @@ public interface EventService {
 
 //    List<EventDto> getAllEvents();
 
-    Page<Event> getAllEvents(String eventCategory, Pageable pageable);
+    Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort);
 
     EventDto updateEvent(Long id, EventDto eventDto);
 

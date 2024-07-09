@@ -9,9 +9,9 @@ import java.util.List;
 
 @Data
 public class EventStatisticsDTO {
-    private String eventName;
-    private EventAttendeeCountDao totalAttendees;
     private BigDecimal totalRevenue;
+    private Double totalOrders;
+    private Double totalCustomers;
     private List<PeriodicalRevenueDao> yearlyRevenue;
     private List<PeriodicalRevenueDao> monthlyRevenue;
     private List<PeriodicalRevenueDao> dailyRevenue;

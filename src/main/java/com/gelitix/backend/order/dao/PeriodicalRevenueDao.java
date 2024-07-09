@@ -2,8 +2,9 @@ package com.gelitix.backend.order.dao;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Date;
 
 public interface PeriodicalRevenueDao {
-    Instant getCreatedDate();
+    Date getCreatedDate();
     BigDecimal getFinalPrice();
 }

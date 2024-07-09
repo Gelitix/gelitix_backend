@@ -3,7 +3,6 @@ package com.gelitix.backend.event.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.gelitix.backend.event.dto.EventDto;
-import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
@@ -13,12 +12,13 @@ import com.gelitix.backend.eventLocation.entity.EventLocation;
 import com.gelitix.backend.eventLocation.service.EventLocationService;
 import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
 import com.gelitix.backend.ticketType.entity.TicketType;
-import com.gelitix.backend.ticketType.repository.TicketTypeRepository;
 import com.gelitix.backend.ticketType.service.TicketTypeService;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +40,7 @@ public class EventServiceImpl implements EventService {
     private final TicketTypeService ticketTypeService;
     private final Cloudinary cloudinary;
 
-    public EventServiceImpl(EventRepository eventRepository, TicketTypeRepository ticketTypeRepository, EventLocationService eventLocationService, EventCategoryService eventCategoryService, UserService userService, @Lazy TicketTypeService ticketTypeService, Cloudinary cloudinary) {
+    public EventServiceImpl(EventRepository eventRepository, EventLocationService eventLocationService, EventCategoryService eventCategoryService, UserService userService, @Lazy TicketTypeService ticketTypeService, Cloudinary cloudinary) {
         this.eventRepository = eventRepository;
         this.eventLocationService = eventLocationService;
         this.eventCategoryService = eventCategoryService;
@@ -112,20 +112,17 @@ public class EventServiceImpl implements EventService {
         return mapEntityToDto(event);
     }
 
-//    @Override
-//    public List<EventDto> getAllEvents() {
-//        return eventRepository.findAll().stream()
-//                .map(this::mapEntityToDto)
-//                .collect(Collectors.toList());
-//    }
-
     @Override
-    public Page<Event> getAllEvents(String eventCategory, Pageable pageable) {
+    public Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sortObject = Sort.by(direction, sort);
+        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObject);
+
         Page<Event> eventPage;
         if (eventCategory != null && !eventCategory.isEmpty()) {
-            eventPage = eventRepository.findByEventCategoryName(eventCategory, pageable);
+            eventPage = eventRepository.findByEventCategoryName(eventCategory, pageableWithSort);
         } else {
-            eventPage = eventRepository.findAll(pageable);
+            eventPage = eventRepository.findAll(pageableWithSort);
         }
         return eventPage;
     }
@@ -193,34 +190,26 @@ public class EventServiceImpl implements EventService {
             eventDto.setTicketTypes(ticketTypeDtos);
         }
         return eventDto;
+
     }
 
-//    @Override
-//    public GetEventByIdResponseDto getEventByIdResponseDto (Long eventId){
-//        Event currentEvent = getEventEntityById(eventId);
-//        if (currentEvent == null){
-//            throw new RuntimeException("Event not found with id: " + eventId);
-//        }
-//        GetEventByIdResponseDto showEventResponseDto = new GetEventByIdResponseDto();
-//        showEventResponseDto.setId(eventId);
-//        showEventResponseDto.setName(currentEvent.getName());
-//        showEventResponseDto.setDescription(currentEvent.getDescription());
-//        showEventResponseDto.setEventCategory(currentEvent.getEventCategory().getName());
-//        showEventResponseDto.setOrganizer(currentEvent.getOrganizer());
-//        showEventResponseDto.setEndTime(currentEvent.getEnd());
-//        showEventResponseDto.setStartTime(currentEvent.getStart());
-//        showEventResponseDto.setLocation(currentEvent.getLocation().getName());
-//        showEventResponseDto.setDate(currentEvent.getDate());
-//        showEventResponseDto.setIsFree(currentEvent.getIsFree());
-//        showEventResponseDto.setUserId(currentEvent.getUser().getId());
-//
-//        List<TicketType> currentTicketType= ticketTypeService.getTicketTypesByEvent(currentEvent);
-//        showEventResponseDto.setTicketTypes(currentTicketType);
-//
-//        return showEventResponseDto;
-//    }
+    public List<Event> findEventByUserId(Long userId){
+        return eventRepository.findByUserId(userId);
+    }
 
-    private CreateTicketTypeDto mapTicketTypeToDto(TicketType ticketType) {
+//    private void saveTicketTypes(EventDto eventDto, Event event) {
+//        List<TicketType> ticketTypes = eventDto.getTicketTypes().stream().map(ticketTypeDto -> {
+//            TicketType ticketType = new TicketType();
+//            ticketType.setName(ticketTypeDto.getName());
+//            ticketType.setPrice(ticketTypeDto.getPrice());
+//            ticketType.setQuantity(ticketTypeDto.getQuantity());
+//            ticketType.setEvent(event);
+//            return ticketType;
+//        }).collect(Collectors.toList());
+//
+//        ticketTypeRepository.saveAll(ticketTypes);
+
+    public CreateTicketTypeDto mapTicketTypeToDto(TicketType ticketType) {
         CreateTicketTypeDto dto = new CreateTicketTypeDto();
         dto.setName(ticketType.getName());
         dto.setPrice(ticketType.getPrice());
