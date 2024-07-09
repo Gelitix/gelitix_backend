@@ -20,8 +20,11 @@ import com.gelitix.backend.users.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.data.domain.Pageable;
+import java.math.BigDecimal;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -34,7 +37,7 @@ import java.util.Map;
 @Service
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
-    private final TicketTypeRepository ticketTypeRepository;
+//    private final TicketTypeRepository ticketTypeRepository;
     private final EventLocationRepository eventLocationRepository;
     private final EventCategoryRepository eventCategoryRepository;
     private final UserService userService;
@@ -43,7 +46,7 @@ public class EventServiceImpl implements EventService {
 
     public EventServiceImpl(EventRepository eventRepository, TicketTypeRepository ticketTypeRepository, EventLocationRepository eventLocationRepository, EventCategoryRepository eventCategoryRepository, UserService userService, @Lazy TicketTypeService ticketTypeService,Cloudinary cloudinary) {
         this.eventRepository = eventRepository;
-        this.ticketTypeRepository = ticketTypeRepository;
+//        this.ticketTypeRepository = ticketTypeRepository;
         this.eventLocationRepository = eventLocationRepository;
         this.eventCategoryRepository = eventCategoryRepository;
         this.userService = userService;
@@ -79,8 +82,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public Page<Event> getAllEvents(String eventCategory, Pageable pageable) {
+        Page<Event> eventPage;
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            eventPage = eventRepository.findByEventCategory(eventCategory, pageable);
+        } else {
+            eventPage = eventRepository.findAll(pageable);
+        }
+        return eventPage;
     }
 
     @Override
@@ -129,7 +138,8 @@ public class EventServiceImpl implements EventService {
         eventRepository.deleteById(id);
     }
 
-    private void mapDtoToEntity(EventDto eventDto, Event event) {
+    @Override
+    public void mapDtoToEntity(EventDto eventDto, Event event) {
         event.setId(eventDto.getId());
         event.setName(eventDto.getName());
         event.setDate(eventDto.getDate());

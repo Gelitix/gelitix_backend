@@ -4,6 +4,9 @@ import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -14,7 +17,7 @@ public interface EventService {
 
     Event createEvent(EventDto eventDTO);
 
-    List<Event> getAllEvents();
+    Page<Event> getAllEvents(String eventCategory, Pageable pageable);
 
     Event updateEvent(Long id, EventDto eventDto);
 
@@ -23,5 +26,7 @@ public interface EventService {
     EventDto mapEntityToDto(Event event);
 
     GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
+
+    void mapDtoToEntity(EventDto eventDto, Event event);
 
 }

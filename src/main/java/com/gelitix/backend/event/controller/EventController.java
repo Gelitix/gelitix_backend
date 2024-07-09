@@ -9,14 +9,14 @@ import com.gelitix.backend.response.Response;
 import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.java.Log;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -31,10 +31,11 @@ public class EventController {
     }
 
     @GetMapping
-    public List<EventDto> getAllEvents() {
-        return eventService.getAllEvents().stream()
-                .map(eventService::mapEntityToDto)
-                .collect(Collectors.toList());
+    public Page<EventDto> getAllEvents( @RequestParam(required = false) String eventCategory,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int size) {
+        Page<Event> eventPage = eventService.getAllEvents(eventCategory, PageRequest.of(page, size));
+        return eventPage.map(eventService::mapEntityToDto);
     }
 
 //    @RolesAllowed("ROLE_EVENT_ORGANIZER")
