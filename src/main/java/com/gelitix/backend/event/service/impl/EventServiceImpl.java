@@ -19,8 +19,11 @@ import com.gelitix.backend.users.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.data.domain.Pageable;
+import java.math.BigDecimal;
 import java.io.IOException;
 import java.time.*;
 import java.util.List;
@@ -112,6 +115,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Page<Event> getAllEvents(String eventCategory, Pageable pageable) {
+        Page<Event> eventPage;
+        if (eventCategory != null && !eventCategory.isEmpty()) {
+            eventPage = eventRepository.findByEventCategory(eventCategory, pageable);
+        } else {
+            eventPage = eventRepository.findAll(pageable);
+        }
+        return eventPage;
     public EventDto getEventById(Long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
