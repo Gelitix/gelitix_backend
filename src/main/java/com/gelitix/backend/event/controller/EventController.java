@@ -10,6 +10,7 @@ import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,11 +32,16 @@ public class EventController {
     }
 
     @GetMapping
-    public Page<EventDto> getAllEvents( @RequestParam(required = false) String eventCategory,
+    public ResponseEntity<?> getAllEvents( @RequestParam(required = false) String eventCategory,
                                         @RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size) {
-        Page<Event> eventPage = eventService.getAllEvents(eventCategory, PageRequest.of(page, size));
-        return eventPage.map(eventService::mapEntityToDto);
+                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(required = false, defaultValue = "id") String sort,
+                                        @RequestParam(required = false, defaultValue = "asc") String order) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Event> eventPage = eventService.getAllEvents(eventCategory, pageable, order, sort);
+        Page<EventDto> eventDtoPage = eventPage.map(eventService::mapEntityToDto);
+        return Response.success(200, "OK", eventDtoPage);
     }
 
 //    @RolesAllowed("ROLE_EVENT_ORGANIZER")

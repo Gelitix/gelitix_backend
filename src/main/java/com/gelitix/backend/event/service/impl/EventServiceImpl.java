@@ -19,6 +19,8 @@ import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,17 +79,20 @@ public class EventServiceImpl implements EventService {
 
         System.out.println("Saved Event: " + event);
 //        saveTicketTypes(eventDto, event);
-
         return event;
     }
 
     @Override
-    public Page<Event> getAllEvents(String eventCategory, Pageable pageable) {
+    public Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sortObject = Sort.by(direction, sort);
+        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObject);
+
         Page<Event> eventPage;
         if (eventCategory != null && !eventCategory.isEmpty()) {
-            eventPage = eventRepository.findByEventCategory(eventCategory, pageable);
+            eventPage = eventRepository.findByEventCategory(eventCategory, pageableWithSort);
         } else {
-            eventPage = eventRepository.findAll(pageable);
+            eventPage = eventRepository.findAll(pageableWithSort);
         }
         return eventPage;
     }

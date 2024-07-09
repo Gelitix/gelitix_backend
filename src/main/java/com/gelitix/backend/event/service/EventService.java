@@ -17,7 +17,7 @@ public interface EventService {
 
     Event createEvent(EventDto eventDTO);
 
-    Page<Event> getAllEvents(String eventCategory, Pageable pageable);
+    Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort);
 
     Event updateEvent(Long id, EventDto eventDto);
 
