@@ -1,5 +1,6 @@
 package com.gelitix.backend.order.service.impl;
 
+import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
@@ -61,7 +62,10 @@ public class OrderServiceImpl implements OrderService {
         Long currentUserId = Long.valueOf(currentUser.getId());
         newOrder.setUser(userService.findById(currentUserId));
 
-        newOrder.setEvent(eventService.getEventById(createOrderDto.getEventId()));
+//        newOrder.setEvent(eventService.getEventById(createOrderDto.getEventId()));
+        EventDto eventDto = eventService.getEventById(createOrderDto.getEventId());
+        Event event = eventService.getEventEntityById(eventDto.getId());
+        newOrder.setEvent(event);
 
         BigDecimal discountPercentage = BigDecimal.ZERO;
         if (createOrderDto.getPromoId() != null){
@@ -76,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
 
         newOrder.setTicketQuantity(createOrderDto.getTicketQuantity());
-        if (newOrder.getTicketQuantity() < chosenTicketType.getQuantity()) {
+        if (newOrder.getTicketQuantity() > chosenTicketType.getQuantity()) {
             throw new IllegalArgumentException("Ticket quantity exceeds available quantity.");
         }
         ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderDto.getTicketQuantity());
@@ -100,10 +104,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public BigDecimal countTotalRevenueByEvent(Long eventId) {
-        Event currentEvent = eventService.getEventById(eventId);
-        if (currentEvent == null) {
+//        Event currentEvent = eventService.getEventById(eventId);
+        EventDto currentEventDto = eventService.getEventById(eventId);
+        if (currentEventDto == null) {
             throw new IllegalArgumentException("Event not found with id: " + eventId);
         }
+        Event currentEvent = eventService.getEventEntityById(currentEventDto.getId());
+
         return orderRepository.countTotalRevenueByEvent(currentEvent);
     }
 

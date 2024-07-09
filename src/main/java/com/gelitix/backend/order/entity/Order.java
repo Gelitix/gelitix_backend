@@ -1,5 +1,6 @@
 package com.gelitix.backend.order.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gelitix.backend.event.entity.Event;
 
 import com.gelitix.backend.promoDetail.entity.PromoDetail;
@@ -25,6 +26,7 @@ public class Order {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;

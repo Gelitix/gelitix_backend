@@ -4,9 +4,11 @@ import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.order.dto.CreateOrderDto;
 import com.gelitix.backend.order.service.OrderService;
 import com.gelitix.backend.response.Response;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RolesAllowed("ROLE_USER")
 @RestController
 @RequestMapping("api/v1/order")
 public class OrderController {

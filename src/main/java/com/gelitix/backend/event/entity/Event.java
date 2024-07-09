@@ -1,5 +1,6 @@
 package com.gelitix.backend.event.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gelitix.backend.eventCategory.entity.EventCategory;
 import com.gelitix.backend.eventLocation.entity.EventLocation;
 import com.gelitix.backend.order.entity.Order;
@@ -61,7 +62,8 @@ public class Event {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
-    
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;

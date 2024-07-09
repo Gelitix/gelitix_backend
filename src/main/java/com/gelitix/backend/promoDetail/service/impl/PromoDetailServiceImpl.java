@@ -1,5 +1,6 @@
 package com.gelitix.backend.promoDetail.service.impl;
 
+import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.order.entity.Order;
@@ -69,7 +70,8 @@ public class PromoDetailServiceImpl implements PromoDetailService {
 
     @Override
     public List<PromoDetail> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId) {
-        Event currentEvent = eventService.getEventById(eventId);
+//        Event currentEvent = eventService.getEventById(eventId);
+        EventDto currentEvent = eventService.getEventById(eventId);
         if(currentEvent.getIsFree()){
             log.info("Event {} is free. No promo details applicable.", eventId);
             return Collections.emptyList();
@@ -88,13 +90,16 @@ public class PromoDetailServiceImpl implements PromoDetailService {
     public PromoDetail deletePromoDetailsbyEventId(Long id,String email) {
         Optional<Users> currentUserOpts = userService.getUserByEmail(email);
         Users currentUser = currentUserOpts.get();
-        Users eventOrganizer = eventService.getEventById(id).getUser();
+//        Users eventOrganizer = eventService.getEventById(id).getName();
 
-        if (currentUser == null || eventOrganizer == null) {
+        EventDto eventDto = eventService.getEventById(id);
+        Long eventOrganizerId = eventDto.getUserId();
+
+        if (currentUser == null || eventOrganizerId == null) {
             throw new IllegalArgumentException("User Cannot Be Found " + id);
         }
 
-        if (currentUser != eventOrganizer) {
+        if (!currentUser.getId().equals(eventOrganizerId)) {
             throw new SecurityException("You do not have permission to delete this promo detail");
         }
         PromoDetail currentPromo= promoDetailRepository.findById(id).get();

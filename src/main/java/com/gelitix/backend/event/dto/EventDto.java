@@ -1,9 +1,10 @@
 package com.gelitix.backend.event.dto;
 
-import com.gelitix.backend.ticketType.dto.TicketTypeDto;
+import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
@@ -17,13 +18,13 @@ public class EventDto {
     @NotBlank(message = "Event name is mandatory")
     private String name;
 
-    @NotNull(message = "Event date is mandatory")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant date;
 
-    @NotNull(message = "Event start time is mandatory")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant startTime;
 
-    @NotNull(message = "Event end time is mandatory")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant endTime;
 
     @NotBlank(message = "Event location is mandatory")
@@ -42,10 +43,12 @@ public class EventDto {
     private Boolean isFree;
 
     @NotNull(message = "Ticket types are mandatory")
-    private List<TicketTypeDto> ticketTypes;
+    private List<CreateTicketTypeDto> ticketTypes;
 
     private Long userId;
 
-    private MultipartFile imageUrl;
+    private MultipartFile imageFile;
+
+    private String imageUrl;
 
 }

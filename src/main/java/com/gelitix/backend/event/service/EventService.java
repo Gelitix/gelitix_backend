@@ -1,6 +1,7 @@
 package com.gelitix.backend.event.service;
 
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.EventResponseDto;
 import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,18 +11,21 @@ import java.util.List;
 
 public interface EventService {
 
-    Event getEventById(Long id);
+    EventDto getEventById(Long id);
 
-    Event createEvent(EventDto eventDTO);
+    EventDto createEvent(EventDto eventDTO);
 
-    List<Event> getAllEvents();
+    List<EventDto> getAllEvents();
 
-    Event updateEvent(Long id, EventDto eventDto);
+    EventDto updateEvent(Long id, EventDto eventDto);
 
     void deleteEvent(Long id);
 
     EventDto mapEntityToDto(Event event);
 
-    GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
+    Event getEventEntityById(Long id);
+
+//    GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
 
 }
+

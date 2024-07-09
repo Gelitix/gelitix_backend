@@ -30,4 +30,8 @@ public class EventCategoryService {
         dto.setName(eventCategory.getName());
         return dto;
     }
+
+    public EventCategory findByName(String name) {
+        return eventCategoryRepository.findByName(name);
+    }
 }

@@ -1,35 +1,23 @@
 package com.gelitix.backend.event.dto;
 
-import com.gelitix.backend.ticketType.entity.TicketType;
 import lombok.Data;
 
 import java.time.Instant;
 import java.time.LocalTime;
-import java.util.List;
 
 @Data
-public class GetEventByIdResponseDto {
+public class EventResponseDto {
     private Long id;
-
     private String name;
-
     private Instant date;
-
     private LocalTime startTime;
-
     private LocalTime endTime;
-
-    private String location;
-
-    private String description;
-
+    private String pic;
     private String organizer;
-
-    private String eventCategory;
-
+    private String description;
     private Boolean isFree;
-
-    private List<TicketType> ticketTypes;
-
-    private Long userId;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String locationName;
+    private String eventCategoryName;
 }

@@ -23,6 +23,11 @@ import java.util.List;
         return eventLocationRepository.findAll();
     }
 
+    @Override
+    public EventLocation findByName(String name) {
+        return eventLocationRepository.findByName(name);
+    }
+
   }
 
 

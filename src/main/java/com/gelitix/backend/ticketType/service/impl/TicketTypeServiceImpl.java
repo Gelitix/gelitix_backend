@@ -1,5 +1,6 @@
 package com.gelitix.backend.ticketType.service.impl;
 
+import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
@@ -37,8 +38,10 @@ public class TicketTypeServiceImpl implements TicketTypeService {
 
     @Override
     public TicketType createTicketType(CreateTicketTypeDto createTicketTypeDto, Long eventId) {
-        Event currentEvent = eventService.getEventById(eventId);
-        if (currentEvent == null) {throw new IllegalArgumentException("Event not found");}
+//        Event currentEvent = eventService.getEventById(eventId);
+        EventDto currentEventDto = eventService.getEventById(eventId);
+        if (currentEventDto == null) {throw new IllegalArgumentException("Event not found");}
+        Event currentEvent = eventService.getEventEntityById(eventId);
         TicketType ticketType = new TicketType();
         ticketType.setEvent(currentEvent);
         ticketType.setName(createTicketTypeDto.getName());
