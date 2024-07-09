@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 import java.time.LocalTime;
@@ -19,6 +20,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@SQLRestriction("deleted_at IS NULL")
 @Table(name = "event")
 public class Event {
     @Id
@@ -60,6 +62,7 @@ public class Event {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "deleted_at")
     private Instant deletedAt;
 

@@ -18,7 +18,8 @@ public interface EventService {
 
     EventDto createEvent(EventDto eventDTO);
 
-    List<EventDto> getAllEvents();
+//    List<EventDto> getAllEvents();
+
     Page<Event> getAllEvents(String eventCategory, Pageable pageable);
 
     EventDto updateEvent(Long id, EventDto eventDto);
@@ -29,8 +30,8 @@ public interface EventService {
 
     Event getEventEntityById(Long id);
 
-//    GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
-
     void mapDtoToEntity(EventDto eventDto, Event event);
+
+//    GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
 
 }

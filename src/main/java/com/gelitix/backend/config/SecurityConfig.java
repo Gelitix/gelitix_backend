@@ -60,6 +60,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/user/register").permitAll();
                     auth.requestMatchers("/api/v1/auth/login").permitAll();
                     auth.requestMatchers("/api/v1/events/**").permitAll();
+                    auth.requestMatchers("/api/v1/events").permitAll();
                     auth.requestMatchers("/api/v1/event-categories").permitAll();
                     auth.requestMatchers("/api/v1/upload").permitAll();
                     // You can add specific role access limiter like this one below

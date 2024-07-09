@@ -3,6 +3,7 @@ package com.gelitix.backend.event.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.data.domain.Pageable;
-import java.math.BigDecimal;
 import java.io.IOException;
 import java.time.*;
 import java.util.List;
@@ -51,10 +51,15 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void deleteEvent(Long id) {
-        eventRepository.deleteById(id);
+        if (!eventRepository.existsById(id)) {
+            throw new IllegalArgumentException("Event with id " + id + " does not exist");
+        }
+        Event currentEvent = eventRepository.findById(id).get();
+        currentEvent.setDeletedAt(Instant.now());
+        eventRepository.save(currentEvent);
     }
 
-    private void mapDtoToEntity(EventDto eventDto, Event event) {
+    public void mapDtoToEntity(EventDto eventDto, Event event) {
         event.setId(eventDto.getId());
         event.setName(eventDto.getName());
         event.setDate(eventDto.getDate());
@@ -107,22 +112,25 @@ public class EventServiceImpl implements EventService {
         return mapEntityToDto(event);
     }
 
-    @Override
-    public List<EventDto> getAllEvents() {
-        return eventRepository.findAll().stream()
-                .map(this::mapEntityToDto)
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<EventDto> getAllEvents() {
+//        return eventRepository.findAll().stream()
+//                .map(this::mapEntityToDto)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public Page<Event> getAllEvents(String eventCategory, Pageable pageable) {
         Page<Event> eventPage;
         if (eventCategory != null && !eventCategory.isEmpty()) {
-            eventPage = eventRepository.findByEventCategory(eventCategory, pageable);
+            eventPage = eventRepository.findByEventCategoryName(eventCategory, pageable);
         } else {
             eventPage = eventRepository.findAll(pageable);
         }
         return eventPage;
+    }
+
+    @Override
     public EventDto getEventById(Long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
@@ -186,6 +194,31 @@ public class EventServiceImpl implements EventService {
         }
         return eventDto;
     }
+
+//    @Override
+//    public GetEventByIdResponseDto getEventByIdResponseDto (Long eventId){
+//        Event currentEvent = getEventEntityById(eventId);
+//        if (currentEvent == null){
+//            throw new RuntimeException("Event not found with id: " + eventId);
+//        }
+//        GetEventByIdResponseDto showEventResponseDto = new GetEventByIdResponseDto();
+//        showEventResponseDto.setId(eventId);
+//        showEventResponseDto.setName(currentEvent.getName());
+//        showEventResponseDto.setDescription(currentEvent.getDescription());
+//        showEventResponseDto.setEventCategory(currentEvent.getEventCategory().getName());
+//        showEventResponseDto.setOrganizer(currentEvent.getOrganizer());
+//        showEventResponseDto.setEndTime(currentEvent.getEnd());
+//        showEventResponseDto.setStartTime(currentEvent.getStart());
+//        showEventResponseDto.setLocation(currentEvent.getLocation().getName());
+//        showEventResponseDto.setDate(currentEvent.getDate());
+//        showEventResponseDto.setIsFree(currentEvent.getIsFree());
+//        showEventResponseDto.setUserId(currentEvent.getUser().getId());
+//
+//        List<TicketType> currentTicketType= ticketTypeService.getTicketTypesByEvent(currentEvent);
+//        showEventResponseDto.setTicketTypes(currentTicketType);
+//
+//        return showEventResponseDto;
+//    }
 
     private CreateTicketTypeDto mapTicketTypeToDto(TicketType ticketType) {
         CreateTicketTypeDto dto = new CreateTicketTypeDto();

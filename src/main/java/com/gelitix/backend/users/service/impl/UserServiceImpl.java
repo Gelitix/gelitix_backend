@@ -107,6 +107,7 @@ public class UserServiceImpl implements UserService {
         }
         Users currentUser = userRepository.findById(id).get();
         currentUser.setDeletedAt(Instant.now());
+        userRepository.save(currentUser);
         }
     }
 

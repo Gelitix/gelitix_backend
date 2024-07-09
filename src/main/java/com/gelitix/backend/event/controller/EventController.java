@@ -2,8 +2,10 @@ package com.gelitix.backend.event.controller;
 
 import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
+import com.gelitix.backend.response.Response;
 import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.java.Log;
@@ -77,4 +79,10 @@ public class EventController {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted successfully");
     }
+
+//    @GetMapping("/promo/{id}")
+//    public ResponseEntity<?> getEventByIdResponseDto(@PathVariable Long id) {
+//        return Response.success(200, "Event Found", eventService.getEventByIdResponseDto(id));
+//
+//    }
 }
