@@ -6,41 +6,52 @@ import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.order.dao.EventAttendeeCountDao;
 import com.gelitix.backend.order.dao.PeriodicalRevenueDao;
 import com.gelitix.backend.order.service.OrderService;
+import com.gelitix.backend.users.entity.Users;
+import com.gelitix.backend.users.service.UserService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
     @Lazy
     private final OrderService orderService;
     private final EventService eventService;
+    private final UserService userService;
 
-    public DashboardServiceImpl(OrderService orderService, EventService eventService) {
+    public DashboardServiceImpl(OrderService orderService, EventService eventService, UserService userService) {
         this.orderService = orderService;
         this.eventService = eventService;
+        this.userService = userService;
     }
 
     @Override
-    public EventStatisticsDTO getEventStatistics(Long eventId, String email) {
-     String eventName =  eventService.getEventById(eventId).getName();
-     EventAttendeeCountDao eventAttendees = orderService.countAttendeesByEventId(eventId);
-     BigDecimal totalRevenuePerEvent = orderService.countTotalRevenueByEvent(eventId);
-     List<PeriodicalRevenueDao> dailyRevenue = orderService.findDailyRevenueByEventId(eventId);
-     List<PeriodicalRevenueDao> monthlyRevenue = orderService.findMonthlyRevenueByEventId(eventId);
-     List<PeriodicalRevenueDao> yearlyRevenue = orderService.findYearlyRevenueByEventId(eventId);
+    public EventStatisticsDTO getEventStatistics(String email) {
+        Optional<Users> currentUseropts = userService.getUserByEmail(email);
+        Users currentUser = currentUseropts.get();
+        Long currentUserId =currentUser.getId();
 
-     EventStatisticsDTO eventStatisticsDTO = new EventStatisticsDTO();
-     eventStatisticsDTO.setEventName(eventName);
-     eventStatisticsDTO.setTotalAttendees(eventAttendees);
-     eventStatisticsDTO.setTotalRevenue(totalRevenuePerEvent);
-     eventStatisticsDTO.setDailyRevenue(dailyRevenue);
-     eventStatisticsDTO.setMonthlyRevenue(monthlyRevenue);
-     eventStatisticsDTO.setYearlyRevenue(yearlyRevenue);
+        Double totalOrderByEventMaker = orderService.countOrdersByUserId(currentUserId);
+        BigDecimal totalRevenueByEventMaker = orderService.countTotalRevenueByEvent(currentUserId);
+        Double countUniqueCustomersByEventMaker = orderService.countUniqueCustomersByEventMaker(currentUserId);
+        List<PeriodicalRevenueDao> dailyRevenue = orderService.findDailyRevenueByEventMaker(currentUserId);
+        List<PeriodicalRevenueDao> monthlyRevenue = orderService.findMonthlyRevenueByEventMaker(currentUserId);
+        List<PeriodicalRevenueDao> yearlyRevenue = orderService.findYearlyRevenueByEventMaker(currentUserId);
 
-     return eventStatisticsDTO;
+
+        EventStatisticsDTO eventStatisticsDTO = new EventStatisticsDTO();
+        eventStatisticsDTO.setTotalCustomers(countUniqueCustomersByEventMaker);
+        eventStatisticsDTO.setTotalOrders(totalOrderByEventMaker);
+        eventStatisticsDTO.setTotalRevenue(totalRevenueByEventMaker);
+        eventStatisticsDTO.setDailyRevenue(dailyRevenue);
+        eventStatisticsDTO.setMonthlyRevenue(monthlyRevenue);
+        eventStatisticsDTO.setYearlyRevenue(yearlyRevenue);
+
+        return eventStatisticsDTO;
 
 
 

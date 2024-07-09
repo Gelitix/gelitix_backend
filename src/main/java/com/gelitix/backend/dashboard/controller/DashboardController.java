@@ -19,10 +19,10 @@ public class DashboardController {
     }
 
     @GetMapping("/{eventId}")
-    public ResponseEntity<?> getEventStatistics(@RequestParam Long eventId) {
+    public ResponseEntity<?> getEventStatistics() {
         var claims = Claims.getClaimsFromJwt();
         var email = (String) claims.get("sub");
-        return Response.success(200, "This is the statistics data",dashboardService.getEventStatistics(eventId, email));
+        return Response.success(200, "This is the statistics data",dashboardService.getEventStatistics(email));
     }
 
 }

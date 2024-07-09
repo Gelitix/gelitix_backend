@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
@@ -30,7 +31,7 @@ public class Point {
 
     @ColumnDefault("0")
     @Column(name = "points_history")
-    private Integer pointsHistory;
+    private BigDecimal pointsHistory;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "expired_at")
@@ -39,5 +40,6 @@ public class Point {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
     private Instant createdAt;
+
 
 }

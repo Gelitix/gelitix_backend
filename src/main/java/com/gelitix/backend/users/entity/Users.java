@@ -14,6 +14,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class Users {
 
     @ColumnDefault("0")
     @Column(name = "point_balance")
-    private Integer pointBalance;
+    private BigDecimal pointBalance;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20)

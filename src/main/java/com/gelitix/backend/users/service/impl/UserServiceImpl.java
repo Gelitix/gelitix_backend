@@ -7,8 +7,11 @@ import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.repository.UserRepository;
 import com.gelitix.backend.users.service.UserService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -43,14 +46,20 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Referred code not found.");
         }
         var uplineUser = uplineUserOpts.get();
-        int pointsAwarded =10000;
-        uplineUser.setPointBalance(uplineUser.getPointBalance() + pointsAwarded);
+        BigDecimal pointsAwarded = BigDecimal.valueOf(10000);
+        uplineUser.setPointBalance(uplineUser.getPointBalance().add(pointsAwarded));
         userRepository.save(uplineUser);
         newUser.setIsReferred(true);
         var savedUser = userRepository.save(newUser);
         pointService.recordPointHistory(uplineUser,savedUser);
 
         return savedUser;
+    }
+    @Override
+    public Users deductPointBalance (Long userId, BigDecimal usedPoint) {
+        Users currentUser= userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found")) ;
+        currentUser.setPointBalance(currentUser.getPointBalance().subtract(usedPoint)); ;
+        return currentUser;
     }
 
     @Override

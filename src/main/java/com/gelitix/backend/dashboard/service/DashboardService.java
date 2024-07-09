@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface DashboardService {
-EventStatisticsDTO getEventStatistics(Long eventId, String email);
+EventStatisticsDTO getEventStatistics(String email);
 }

@@ -181,6 +181,10 @@ public class EventServiceImpl implements EventService {
 
     }
 
+    public List<Event> findEventByUserId(Long userId){
+        return eventRepository.findByUserId(userId);
+    }
+
 //    private void saveTicketTypes(EventDto eventDto, Event event) {
 //        List<TicketType> ticketTypes = eventDto.getTicketTypes().stream().map(ticketTypeDto -> {
 //            TicketType ticketType = new TicketType();
