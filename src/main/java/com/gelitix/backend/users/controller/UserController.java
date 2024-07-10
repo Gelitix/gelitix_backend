@@ -4,6 +4,7 @@ import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.response.Response;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
+import com.gelitix.backend.users.dto.UpdateProfileResponseDto;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import jakarta.annotation.security.RolesAllowed;
@@ -61,7 +62,7 @@ public class UserController {
         var claims = Claims.getClaimsFromJwt();
         var email = (String) claims.get("sub");
 
-        ProfileDto updatedProfile = userService.updateProfile(email, profileDto);
+        UpdateProfileResponseDto updatedProfile = userService.updateProfile(email, profileDto);
         return Response.success("User updated successfully", updatedProfile);
     }
 

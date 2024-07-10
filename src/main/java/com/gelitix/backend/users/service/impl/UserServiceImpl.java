@@ -3,6 +3,7 @@ package com.gelitix.backend.users.service.impl;
 import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
+import com.gelitix.backend.users.dto.UpdateProfileResponseDto;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.repository.UserRepository;
 import com.gelitix.backend.users.service.UserService;
@@ -72,6 +73,8 @@ public class UserServiceImpl implements UserService {
         Users user = currentProfile.get();
         ProfileDto profileDto = new ProfileDto();
         profileDto.setUsername(user.getUsername());
+        profileDto.setPassword(user.getPassword());
+        profileDto.setPhoneNumber(user.getPhoneNumber());
         profileDto.setProfilePicture(user.getProfilePicture());
         profileDto.setEmail(user.getEmail());
         profileDto.setRole(user.getRole());
@@ -96,18 +99,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ProfileDto updateProfile(String email, ProfileDto profileDto) {
+    public UpdateProfileResponseDto updateProfile(String email, ProfileDto profileDto) {
         Optional<Users> currentProfile = userRepository.findByEmail(email);
         if (currentProfile.isEmpty()) {
             throw new IllegalArgumentException("Your account cannot be found");
         }
         Users user = currentProfile.get();
-        profileDto.setUsername(user.getUsername());
-        profileDto.setProfilePicture(user.getProfilePicture());
-        profileDto.setEmail(user.getEmail());
-        profileDto.setRole(user.getRole());
+        user.setUsername(profileDto.getUsername());
+        user.setProfilePicture(profileDto.getProfilePicture());
+        user.setPhoneNumber(profileDto.getPhoneNumber());
+        user.setRole(profileDto.getRole());
+        userRepository.save(user);
 
-        return profileDto;
+        UpdateProfileResponseDto updateProfileResponse = new UpdateProfileResponseDto();
+        updateProfileResponse.setUsername(user.getUsername());
+        updateProfileResponse.setProfilePicture(user.getProfilePicture());
+        updateProfileResponse.setPhoneNumber(user.getPhoneNumber());
+        updateProfileResponse.setPassword(user.getPassword());
+
+        return updateProfileResponse;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.gelitix.backend.users.service;
 
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
+import com.gelitix.backend.users.dto.UpdateProfileResponseDto;
 import com.gelitix.backend.users.entity.Users;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public interface UserService {
 
     Optional<Users> getUserByEmail(String email);
 
-    ProfileDto updateProfile(String email, ProfileDto profileDto);
+    UpdateProfileResponseDto updateProfile(String email, ProfileDto profileDto);
 
     void deleteUser(Long id);
 
