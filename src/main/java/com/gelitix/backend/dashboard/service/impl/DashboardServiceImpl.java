@@ -3,13 +3,11 @@ package com.gelitix.backend.dashboard.service.impl;
 import com.gelitix.backend.dashboard.dto.EventStatisticsDTO;
 import com.gelitix.backend.dashboard.service.DashboardService;
 import com.gelitix.backend.event.service.EventService;
-import com.gelitix.backend.order.dao.EventAttendeeCountDao;
 import com.gelitix.backend.order.dao.PeriodicalRevenueDao;
 import com.gelitix.backend.order.service.OrderService;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,9 +33,9 @@ public class DashboardServiceImpl implements DashboardService {
         Users currentUser = currentUseropts.get();
         Long currentUserId =currentUser.getId();
 
-        Double totalOrderByEventMaker = orderService.countOrdersByUserId(currentUserId);
+        Long totalOrderByEventMaker = orderService.countOrdersByUserId(currentUserId);
         BigDecimal totalRevenueByEventMaker = orderService.countTotalRevenueByEvent(currentUserId);
-        Double countUniqueCustomersByEventMaker = orderService.countUniqueCustomersByEventMaker(currentUserId);
+        Long countUniqueCustomersByEventMaker = orderService.countUniqueCustomersByEventMaker(currentUserId);
         List<PeriodicalRevenueDao> dailyRevenue = orderService.findDailyRevenueByEventMaker(currentUserId);
         List<PeriodicalRevenueDao> monthlyRevenue = orderService.findMonthlyRevenueByEventMaker(currentUserId);
         List<PeriodicalRevenueDao> yearlyRevenue = orderService.findYearlyRevenueByEventMaker(currentUserId);

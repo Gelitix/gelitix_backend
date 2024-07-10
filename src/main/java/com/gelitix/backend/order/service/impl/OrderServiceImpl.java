@@ -1,7 +1,5 @@
 package com.gelitix.backend.order.service.impl;
 
-import com.gelitix.backend.event.dto.EventDto;
-import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.order.dao.EventAttendeeCountDao;
@@ -153,13 +151,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Double countOrdersByUserId(Long userId) {
-        return orderRepository.countOrdersByUserId(userId);
+    public Long countOrdersByUserId(Long userId) {
+        return orderRepository.countByUserId(userId);
     }
 
     @Override
-    public Double countUniqueCustomersByEventMaker(Long userId) {
+    public Long countUniqueCustomersByEventMaker(Long userId) {
         return orderRepository.countUniqueCustomersByEventMaker(userId);
+    }
+
+    @Override
+    public List<Order> findOrdersByUserId(Long userId) {
+        return orderRepository.findOrdersByUserId(userId);
     }
 
 }

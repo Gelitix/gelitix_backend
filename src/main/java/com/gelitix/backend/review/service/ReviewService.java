@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewService {
-    ReviewDto addReview(String email, ReviewDto reviewDto, Order order, Event event);
+    ReviewDto addReview(String email, ReviewDto reviewDto, Long eventId);
     List<Review> getAllReviews();
 }

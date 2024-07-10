@@ -18,6 +18,7 @@ public interface OrderService {
     List<PeriodicalRevenueDao> findDailyRevenueByEventMaker(Long userId);
     List<PeriodicalRevenueDao> findMonthlyRevenueByEventMaker(Long userId);
     List<PeriodicalRevenueDao> findYearlyRevenueByEventMaker(Long userId);
-    Double countOrdersByUserId(Long userId);
-    Double countUniqueCustomersByEventMaker(Long userId);
+    Long countOrdersByUserId(Long userId);
+    Long countUniqueCustomersByEventMaker(Long userId);
+    List<Order> findOrdersByUserId(Long userId);
 }
