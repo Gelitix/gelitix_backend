@@ -12,13 +12,15 @@ import lombok.Data;
 import java.math.BigDecimal;
 @Data
 public class CreateTicketTypeDto {
-    @NotBlank @NotNull
+    @NotBlank
     private String name;
 
-    @NotBlank @NotNull
+    @NotNull
     private BigDecimal price;
 
-    @NotBlank @NotNull
+    @NotNull
     private Integer quantity;
 
+//    @NotNull
+//    private Long eventId;
 }

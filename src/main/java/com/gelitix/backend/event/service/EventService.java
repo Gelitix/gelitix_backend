@@ -32,6 +32,4 @@ public interface EventService {
 
     void mapDtoToEntity(EventDto eventDto, Event event);
 
-//    GetEventByIdResponseDto getEventByIdResponseDto (Long eventId);
-
 }

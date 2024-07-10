@@ -63,6 +63,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/events").permitAll();
                     auth.requestMatchers("/api/v1/event-categories").permitAll();
                     auth.requestMatchers("/api/v1/upload").permitAll();
+                    auth.requestMatchers("/api/v1/promo-detail/**").permitAll();
+                    auth.requestMatchers("/api/v1/location").permitAll();
                     // You can add specific role access limiter like this one below
                     // auth.requestMatchers("api/v1/wallet/admin/**").hasRole("ADMIN");
                     auth.anyRequest().authenticated();

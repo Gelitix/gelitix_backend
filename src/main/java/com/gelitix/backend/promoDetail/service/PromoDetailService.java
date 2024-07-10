@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface PromoDetailService {
     Optional<PromoDetail> getPromoDetails(Long id);
-    PromoDetail addPromo(CreatePromoDto createPromoDto, Event event, Order order);
+    CreatePromoDto addPromo(CreatePromoDto createPromoDto, String email);
     List<PromoDetail> getPromoDetailsbyEventId(Long eventId);
     List<PromoDetail> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId);
     PromoDetail deletePromoDetailsbyEventId(Long eventId, String email);

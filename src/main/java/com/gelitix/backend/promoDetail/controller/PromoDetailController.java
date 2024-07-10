@@ -6,6 +6,7 @@ import com.gelitix.backend.promoDetail.dto.CreatePromoDto;
 import com.gelitix.backend.promoDetail.entity.PromoDetail;
 import com.gelitix.backend.promoDetail.service.PromoDetailService;
 import com.gelitix.backend.response.Response;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,11 +33,21 @@ public class PromoDetailController {
         return Response.success(200, "This is the list:",promoDetailService.getPromoDetailsbyUserIdAndEventId(userId, eventId));
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<?> deletePromoDetailsByEventId(@RequestParam("eventId") Long eventId) {
+    @RolesAllowed("ROLE_EVENT_ORGANIZER")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePromoDetailsByEventId(@PathVariable("id") Long promoId) {
         var claims = Claims.getClaimsFromJwt();
         var email = (String) claims.get("sub");
-        promoDetailService.deletePromoDetailsbyEventId(eventId, email);
+        promoDetailService.deletePromoDetailsbyEventId(promoId, email);
         return  Response.success("Your Promo Has Been Deleted");
             }
+
+
+    @RolesAllowed("ROLE_EVENT_ORGANIZER")
+    @PostMapping("/create-promo")
+    public ResponseEntity<?> addPromo(@RequestBody CreatePromoDto createPromoDto) {
+        var claims = Claims.getClaimsFromJwt();
+        var email = (String) claims.get("sub");
+        return  Response.success(200, "Promo is created", promoDetailService.addPromo(createPromoDto,email));
+    }
 }

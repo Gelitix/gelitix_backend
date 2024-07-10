@@ -7,6 +7,7 @@ import com.gelitix.backend.promoDetail.entity.PromoDetail;
 import com.gelitix.backend.review.entity.Review;
 import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.users.entity.Users;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

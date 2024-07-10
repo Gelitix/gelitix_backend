@@ -22,7 +22,7 @@ public class TicketType {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_type_id_gen")
     @SequenceGenerator(name = "ticket_type_id_gen", sequenceName = "ticket_type_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", length = Integer.MAX_VALUE)
     private String name;
@@ -33,7 +33,6 @@ public class TicketType {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
@@ -52,5 +51,21 @@ public class TicketType {
 
     @OneToMany(mappedBy = "ticketType")
     private Set<Order> orders = new LinkedHashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
+    @PreRemove
+    public void preRemove() {
+        this.deletedAt = Instant.now();
+    }
 
 }

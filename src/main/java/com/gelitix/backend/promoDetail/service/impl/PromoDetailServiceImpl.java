@@ -3,15 +3,13 @@ package com.gelitix.backend.promoDetail.service.impl;
 import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
-import com.gelitix.backend.order.entity.Order;
 import com.gelitix.backend.order.service.OrderService;
 import com.gelitix.backend.promoDetail.dto.CreatePromoDto;
 import com.gelitix.backend.promoDetail.entity.PromoDetail;
 import com.gelitix.backend.promoDetail.repository.PromoDetailRepository;
 import com.gelitix.backend.promoDetail.service.PromoDetailService;
-import com.gelitix.backend.response.Response;
-import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
+import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -39,14 +37,18 @@ public class PromoDetailServiceImpl implements PromoDetailService {
         this.orderService = orderService;
     }
 
-
     @Override
     public Optional<PromoDetail> getPromoDetails(Long id) {
         return promoDetailRepository.findById(id);
     }
 
     @Override
-    public PromoDetail addPromo(CreatePromoDto createPromoDto, Event event, Order order) {
+    public CreatePromoDto addPromo(CreatePromoDto createPromoDto, String email) {
+        Event currentEvent = eventService.getEventEntityById(createPromoDto.getEventId());
+        String eventOrganizerEmail = currentEvent.getUser().getEmail();
+        if (!eventOrganizerEmail.equals(email)) {
+            throw new ServiceException("You are not allowed to add promo to this event");
+        }
         PromoDetail promoDetail = new PromoDetail();
         if (Boolean.TRUE.equals(createPromoDto.getIsReferral())){
             promoDetail.setDiscount(new BigDecimal("0.1"));
@@ -55,8 +57,14 @@ public class PromoDetailServiceImpl implements PromoDetailService {
         promoDetail.setName(createPromoDto.getName());
         promoDetail.setStartValid(createPromoDto.getStartValid());
         promoDetail.setEndValid(createPromoDto.getEndValid());
-        promoDetail.setEvent(event);
-        return promoDetailRepository.save(promoDetail);
+        promoDetail.setEvent(eventService.getEventEntityById(createPromoDto.getEventId()));
+        promoDetail.setQuantity(createPromoDto.getQuantity());
+        promoDetail.setIsReferral(createPromoDto.getIsReferral());
+        promoDetailRepository.save(promoDetail);
+        if (getPromoDetailsbyEventId(promoDetail.getId() )== null) {
+            throw new ServiceException("Failed to add promo to this event");
+        }
+        return createPromoDto;
     }
 
     @Override
@@ -66,7 +74,6 @@ public class PromoDetailServiceImpl implements PromoDetailService {
         }
         return  promoDetailRepository.findPromoDetailsByEventId(eventId);
         }
-
 
     @Override
     public List<PromoDetail> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId) {
@@ -85,23 +92,22 @@ public class PromoDetailServiceImpl implements PromoDetailService {
         allPromos.addAll(regularPromo);
         return allPromos;    }
 
-
     @Override
     public PromoDetail deletePromoDetailsbyEventId(Long id,String email) {
-        Optional<Users> currentUserOpts = userService.getUserByEmail(email);
-        Users currentUser = currentUserOpts.get();
-//        Users eventOrganizer = eventService.getEventById(id).getName();
-
-        EventDto eventDto = eventService.getEventById(id);
-        Long eventOrganizerId = eventDto.getUserId();
-
-        if (currentUser == null || eventOrganizerId == null) {
-            throw new IllegalArgumentException("User Cannot Be Found " + id);
-        }
-
-        if (!currentUser.getId().equals(eventOrganizerId)) {
-            throw new SecurityException("You do not have permission to delete this promo detail");
-        }
+//        Users currentUser = userService.getUserByEmail(email)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
+//
+//
+//        Long eventOrganizerId = eventService.getEventById(id).getUserId();
+//        String eventOrganizerEmail= userService.findById(eventOrganizerId).getEmail();
+//
+//        if (currentUser == null || eventOrganizerId == null) {
+//            throw new IllegalArgumentException("User Cannot Be Found " + id);
+//        }
+//
+//        if (!email.equals(eventOrganizerEmail)) {
+//            throw new SecurityException("You do not have permission to delete this promo detail");
+//        }
         PromoDetail currentPromo= promoDetailRepository.findById(id).get();
         currentPromo.setDeletedAt(Instant.now());
 

@@ -207,7 +207,7 @@ public class EventServiceImpl implements EventService {
 //            return ticketType;
 //        }).collect(Collectors.toList());
 //
-//        ticketTypeRepository.saveAll(ticketTypes);
+//        ticketTypeRepository.saveAll(ticketTypes);}
 
     public CreateTicketTypeDto mapTicketTypeToDto(TicketType ticketType) {
         CreateTicketTypeDto dto = new CreateTicketTypeDto();

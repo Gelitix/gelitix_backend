@@ -25,7 +25,6 @@ public class TicketTypeServiceImpl implements TicketTypeService {
         this.eventService = eventService;
     }
 
-
     @Override
     public Optional<TicketType> getTicketTypeById(Long id) {
         return ticketTypeRepository.findById(id);
@@ -38,7 +37,6 @@ public class TicketTypeServiceImpl implements TicketTypeService {
 
     @Override
     public TicketType createTicketType(CreateTicketTypeDto createTicketTypeDto, Long eventId) {
-//        Event currentEvent = eventService.getEventById(eventId);
         EventDto currentEventDto = eventService.getEventById(eventId);
         if (currentEventDto == null) {throw new IllegalArgumentException("Event not found");}
         Event currentEvent = eventService.getEventEntityById(eventId);
@@ -46,11 +44,12 @@ public class TicketTypeServiceImpl implements TicketTypeService {
         ticketType.setEvent(currentEvent);
         ticketType.setName(createTicketTypeDto.getName());
         ticketType.setQuantity(createTicketTypeDto.getQuantity());
-        if (currentEvent.getIsFree()) {
-            ticketType.setPrice(BigDecimal.ZERO);
-        }
-        ticketType.setPrice(createTicketTypeDto.getPrice());
 
+        if (currentEventDto.getIsFree()) {
+            ticketType.setPrice(BigDecimal.ZERO);
+        }else {
+            ticketType.setPrice(createTicketTypeDto.getPrice());
+        }
         return ticketTypeRepository.save(ticketType);
     }
 

@@ -47,20 +47,20 @@ public class EventController {
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @PostMapping(value = "/create-event", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createEvent(@RequestPart("eventDto") EventDto eventDto,
+    public ResponseEntity<?> createEvent(@ModelAttribute EventDto eventDto,
                                          @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         String role = Claims.getRoleFromJwt();
         if (role == null || !role.equals(RoleName.ROLE_EVENT_ORGANIZER.name())) {
-            return Response.failed("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
 
         Long userId = Claims.getUserIdFromJwt();
         eventDto.setUserId(userId);
         eventDto.setImageFile(imageFile);
 
-        EventDto createdEvent = eventService.createEvent(eventDto);
-        return ResponseEntity.ok(createdEvent);
-    }
+            EventDto createdEvent = eventService.createEvent(eventDto);
+            return ResponseEntity.ok(createdEvent);
+        }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {

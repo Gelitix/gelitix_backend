@@ -20,8 +20,8 @@ public class CreateOrderRequestDto {
     @NotBlank
     private Long ticketTypeId;
 
-    @Nullable
-    private Long promoTypeId;
+//    @Nullable
+//    private Long promoTypeId;
 
     @Nullable
     private BigDecimal pointUsed;

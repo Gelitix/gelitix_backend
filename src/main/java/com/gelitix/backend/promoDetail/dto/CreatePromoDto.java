@@ -22,7 +22,7 @@ public class CreatePromoDto {
     private String name;
 
     @NotBlank
-    private Event event;
+    private Long eventId;
 
     @NotBlank
     private BigDecimal discount;

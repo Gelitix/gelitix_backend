@@ -21,7 +21,7 @@ public class PromoDetail {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "promo_details_id_gen")
     @SequenceGenerator(name = "promo_details_id_gen", sequenceName = "promo_details_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "is_referral")
     private Boolean isReferral;
@@ -57,4 +57,19 @@ public class PromoDetail {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
+    @PreRemove
+    public void preRemove() {
+        this.deletedAt = Instant.now();
+    }
 }

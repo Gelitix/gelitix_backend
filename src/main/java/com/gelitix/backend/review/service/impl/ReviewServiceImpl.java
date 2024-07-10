@@ -29,8 +29,11 @@ public class ReviewServiceImpl implements ReviewService {
         Instant eventDate = event.getDate();
         String orderEmail = order.getUser().getEmail();
         Instant now = Instant.now();
-        if(!email.equals(orderEmail) && now.isBefore(eventDate)) {
+        if(!email.equals(orderEmail) ) {
             throw new IllegalArgumentException("You have to order this event first before reviewing it.");
+        }
+        if(!now.isBefore(eventDate)){
+            throw new IllegalArgumentException("Please wait until the event is finished.");
         }
 
         Review review = new Review();

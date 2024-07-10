@@ -4,9 +4,11 @@ import com.gelitix.backend.response.Response;
 import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
 import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.ticketType.service.TicketTypeService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RolesAllowed("ROLE_EVENT_ORGANIZER")
 @RestController
 @RequestMapping("api/v1/ticket-type")
 public class TicketTypeController {
@@ -29,12 +31,13 @@ public class TicketTypeController {
 
       @PostMapping("")
     public ResponseEntity<?> createTicketType(@RequestBody CreateTicketTypeDto createTicketTypeDto, Long eventId) {
-        ticketTypeService.createTicketType(createTicketTypeDto, eventId );
+
+        ticketTypeService.createTicketType(createTicketTypeDto , eventId);
         return Response.success(200,"Ticket type created", ticketTypeService.getTicketTypeById(eventId));
       }
 
 
-    @DeleteMapping("")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTicketType (@PathVariable Long id) {
         ticketTypeService.deleteTicketType(id);
         return Response.success(200,"Ticket type deleted", ticketTypeService.getTicketTypeById(id));

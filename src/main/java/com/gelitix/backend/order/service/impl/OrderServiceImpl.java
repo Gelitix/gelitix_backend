@@ -68,12 +68,6 @@ public class OrderServiceImpl implements OrderService {
 
         newOrder.setEvent(eventService.getEventEntityById(createOrderRequestDto.getEventId()));
 
-        BigDecimal discountPercentage = BigDecimal.ZERO;
-        if (createOrderRequestDto.getPromoId() != null){
-        PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderRequestDto.getPromoTypeId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
-        newOrder.setPromo(chosenPromoDetail);
-        discountPercentage = newOrder.getPromo().getDiscount();
-        }
 
         Optional<TicketType> chosenTicketTypeOpts = ticketTypeService.getTicketTypeById(createOrderRequestDto.getTicketTypeId());
         TicketType chosenTicketType = chosenTicketTypeOpts.get();
@@ -86,6 +80,13 @@ public class OrderServiceImpl implements OrderService {
         }
         ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderRequestDto.getTicketQuantity());
 
+        BigDecimal discountPercentage = BigDecimal.ZERO;
+        if (createOrderRequestDto.getPromoId() != null){
+            PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderRequestDto.getPromoId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
+            newOrder.setPromo(chosenPromoDetail);
+            discountPercentage = newOrder.getPromo().getDiscount();
+        } else newOrder.setFinalPrice(chosenTicketType.getPrice());
+
         BigDecimal discount = discountPercentage.multiply(chosenTicketType.getPrice()) ;
         BigDecimal discountPrice = chosenTicketType.getPrice().subtract(discount);
 
@@ -93,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
             newOrder.setFinalPrice(discountPrice.subtract(createOrderRequestDto.getPointUsed()));
             pointService.deductPointHistory(currentUser, createOrderRequestDto.getPointUsed());
             userService.deductPointBalance(currentUserId, createOrderRequestDto.getPointUsed());
-        }
+        }else newOrder.setFinalPrice(discountPrice);
 
         orderRepository.save(newOrder);
 
@@ -104,11 +105,11 @@ public class OrderServiceImpl implements OrderService {
         createOrderResponse.setOrderId(newOrder.getId());
         createOrderResponse.setUserName(newOrder.getUser().getUsername());
         createOrderResponse.setEventName(newOrder.getEvent().getName());
-        createOrderResponse.setPromo(newOrder.getPromo().getName());
+        createOrderResponse.setPromo(newOrder.getPromo() != null ? newOrder.getPromo().getName() : null);
         createOrderResponse.setTicketType(newOrder.getTicketType().getName());
         createOrderResponse.setTicketQuantity(newOrder.getTicketQuantity());
         createOrderResponse.setDiscountPercentage(discountPercentage);
-        createOrderResponse.setDiscountPrice(discountPrice);
+        createOrderResponse.setDiscountPrice(discount);
         createOrderResponse.setFinalPrice(newOrder.getFinalPrice());
         return createOrderResponse;
     }
