@@ -2,6 +2,7 @@ package com.gelitix.backend.users.service.impl;
 
 import com.gelitix.backend.cloudinary.service.ImageUploadService;
 import com.gelitix.backend.event.service.EventService;
+import com.gelitix.backend.point.entity.Point;
 import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
@@ -63,8 +64,14 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Referred code not found.");
         }
         var uplineUser = uplineUserOpts.get();
-        BigDecimal pointsAwarded = BigDecimal.valueOf(10000);
-        uplineUser.setPointBalance(uplineUser.getPointBalance().add(pointsAwarded));
+
+        List<Point> uplineUserPoint= pointService.findPointsByInviterId(uplineUser.getId());
+        BigDecimal totalPoints = BigDecimal.valueOf(0);
+        for (Point point : uplineUserPoint) {
+            totalPoints.add(point.getRemainingPoint()) ;
+        }
+        uplineUser.setPointBalance(totalPoints);
+
         userRepository.save(uplineUser);
         newUser.setIsReferred(true);
         var savedUser = userRepository.save(newUser);
@@ -146,3 +153,5 @@ public class UserServiceImpl implements UserService {
         userRepository.save(currentUser);
         }
     }
+
+

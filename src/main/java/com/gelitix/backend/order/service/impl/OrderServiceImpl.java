@@ -102,6 +102,7 @@ public class OrderServiceImpl implements OrderService {
 
         if (createOrderRequestDto.getPointUsed() != null && createOrderRequestDto.getPointUsed().compareTo(currentUser.getPointBalance()) <= 0) {
             newOrder.setFinalPrice(discountPrice.subtract(createOrderRequestDto.getPointUsed()));
+            pointService.updateUserPointBalance(currentUserId,createOrderRequestDto.getPointUsed());
             pointService.deductPointHistory(currentUser, createOrderRequestDto.getPointUsed());
             userService.deductPointBalance(currentUserId, createOrderRequestDto.getPointUsed());
         }else newOrder.setFinalPrice(discountPrice);

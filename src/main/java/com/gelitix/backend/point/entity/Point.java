@@ -46,4 +46,7 @@ public class Point {
         this.createdAt = Instant.now();
     }
 
+    @Column(name = "remaining_point")
+    private BigDecimal remainingPoint;
+
 }

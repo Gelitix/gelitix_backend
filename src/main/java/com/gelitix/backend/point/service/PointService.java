@@ -10,4 +10,6 @@ public interface PointService {
     List<Point> getPoint(String email);
     Point recordPointHistory (Users uplineUser , Users savedUser);
     Point deductPointHistory(Users users, BigDecimal pointUsed);
+    List<Point> findPointsByInviterId(Long inviterId);
+    void updateUserPointBalance(Long userId , BigDecimal pointUsed);
 }
