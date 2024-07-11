@@ -78,18 +78,21 @@ public class OrderServiceImpl implements OrderService {
         }
         ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderRequestDto.getTicketQuantity());
 
+        BigDecimal price = BigDecimal.valueOf(newOrder.getTicketQuantity()).multiply(chosenTicketType.getPrice());
         BigDecimal discountPercentage = BigDecimal.ZERO;
         if (createOrderRequestDto.getPromoId() != null){
             PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderRequestDto.getPromoId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
             newOrder.setPromo(chosenPromoDetail);
+            chosenPromoDetail.setQuantity(chosenPromoDetail.getQuantity()-1);
             discountPercentage = newOrder.getPromo().getDiscount();
-        } else newOrder.setFinalPrice(chosenTicketType.getPrice());
+        } else newOrder.setFinalPrice(price);
 
         BigDecimal discount = discountPercentage.multiply(chosenTicketType.getPrice()) ;
-        BigDecimal discountPrice = chosenTicketType.getPrice().subtract(discount);
+        BigDecimal discountPrice = price.subtract(discount);
 
         if (createOrderRequestDto.getPointUsed() != null && createOrderRequestDto.getPointUsed().compareTo(currentUser.getPointBalance()) <= 0) {
             newOrder.setFinalPrice(discountPrice.subtract(createOrderRequestDto.getPointUsed()));
+            pointService.updateUserPointBalance(currentUserId,createOrderRequestDto.getPointUsed());
             pointService.deductPointHistory(currentUser, createOrderRequestDto.getPointUsed());
             userService.deductPointBalance(currentUserId, createOrderRequestDto.getPointUsed());
         }else newOrder.setFinalPrice(discountPrice);

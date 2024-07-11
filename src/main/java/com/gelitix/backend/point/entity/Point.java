@@ -42,4 +42,7 @@ public class Point {
     private Instant createdAt;
 
 
+    @Column(name = "remaining_point")
+    private BigDecimal remainingPoint;
+
 }
