@@ -1,7 +1,6 @@
 package com.gelitix.backend.event.service.impl;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+import com.gelitix.backend.cloudinary.service.ImageUploadService;
 import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
@@ -21,13 +20,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import org.springframework.data.domain.Pageable;
-import java.io.IOException;
 import java.time.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -38,15 +35,16 @@ public class EventServiceImpl implements EventService {
     private final EventCategoryService eventCategoryService;
     private final UserService userService;
     private final TicketTypeService ticketTypeService;
-    private final Cloudinary cloudinary;
+    private final ImageUploadService imageUploadService;
 
-    public EventServiceImpl(EventRepository eventRepository, EventLocationService eventLocationService, EventCategoryService eventCategoryService, UserService userService, @Lazy TicketTypeService ticketTypeService, Cloudinary cloudinary) {
+    public EventServiceImpl(EventRepository eventRepository, EventLocationService eventLocationService, EventCategoryService eventCategoryService, UserService userService, @Lazy TicketTypeService ticketTypeService, ImageUploadService imageUploadService) {
         this.eventRepository = eventRepository;
         this.eventLocationService = eventLocationService;
         this.eventCategoryService = eventCategoryService;
         this.userService = userService;
         this.ticketTypeService = ticketTypeService;
-        this.cloudinary = cloudinary;
+        this.imageUploadService = imageUploadService;
+
     }
 
     @Override
@@ -57,31 +55,6 @@ public class EventServiceImpl implements EventService {
         Event currentEvent = eventRepository.findById(id).get();
         currentEvent.setDeletedAt(Instant.now());
         eventRepository.save(currentEvent);
-    }
-
-    public void mapDtoToEntity(EventDto eventDto, Event event) {
-        event.setId(eventDto.getId());
-        event.setName(eventDto.getName());
-        event.setDate(eventDto.getDate());
-//        event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
-//        event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
-        if (eventDto.getStartTime() != null) {
-            event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
-        }
-
-        if (eventDto.getEndTime() != null) {
-            event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
-        }
-        event.setDescription(eventDto.getDescription());
-        EventCategory eventCategory = eventCategoryService.findByName(eventDto.getEventCategory());
-        event.setEventCategory(eventCategory);
-        event.setIsFree(eventDto.getIsFree());
-        event.setOrganizer(eventDto.getOrganizer());
-
-        EventLocation location = eventLocationService.findByName(eventDto.getLocation());
-        event.setLocation(location);
-//        Users user = userService.findById(eventDto.getUserId()); // Fetch the user using UserService
-//        event.setUser(user);
     }
 
     @Override
@@ -97,10 +70,7 @@ public class EventServiceImpl implements EventService {
 
         event.setUser(user);
         event.setCreatedAt(Instant.now());
-        event.setUpdatedAt(Instant.now());
-        event = eventRepository.save(event);
-
-        handleImageUpload(eventDto, event);
+        event = getEvent(eventDto, event);
 
         if (eventDto.getTicketTypes() != null && !eventDto.getTicketTypes().isEmpty()) {
             for (CreateTicketTypeDto ticketTypeDto : eventDto.getTicketTypes()) {
@@ -110,6 +80,19 @@ public class EventServiceImpl implements EventService {
         }
 
         return mapEntityToDto(event);
+    }
+
+    private Event getEvent(EventDto eventDto, Event event) {
+        event.setUpdatedAt(Instant.now());
+        event = eventRepository.save(event);
+
+        String imageUrl = imageUploadService.uploadImage(eventDto.getImageFile());
+        if (imageUrl != null) {
+            event.setPic(imageUrl);
+            eventDto.setImageUrl(imageUrl);
+            eventRepository.save(event);
+        }
+        return event;
     }
 
     @Override
@@ -149,10 +132,7 @@ public class EventServiceImpl implements EventService {
         Users existingUser = userService.findById(existingUserId);
         existingEvent.setUser(existingUser);
 
-        existingEvent.setUpdatedAt(Instant.now());
-        existingEvent = eventRepository.save(existingEvent);
-
-        handleImageUpload(eventDto, existingEvent);
+        existingEvent = getEvent(eventDto, existingEvent);
 
         return mapEntityToDto(existingEvent);
     }
@@ -197,18 +177,6 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findByUserId(userId);
     }
 
-//    private void saveTicketTypes(EventDto eventDto, Event event) {
-//        List<TicketType> ticketTypes = eventDto.getTicketTypes().stream().map(ticketTypeDto -> {
-//            TicketType ticketType = new TicketType();
-//            ticketType.setName(ticketTypeDto.getName());
-//            ticketType.setPrice(ticketTypeDto.getPrice());
-//            ticketType.setQuantity(ticketTypeDto.getQuantity());
-//            ticketType.setEvent(event);
-//            return ticketType;
-//        }).collect(Collectors.toList());
-//
-//        ticketTypeRepository.saveAll(ticketTypes);}
-
     public CreateTicketTypeDto mapTicketTypeToDto(TicketType ticketType) {
         CreateTicketTypeDto dto = new CreateTicketTypeDto();
         dto.setName(ticketType.getName());
@@ -217,19 +185,29 @@ public class EventServiceImpl implements EventService {
         return dto;
     }
 
-    private void handleImageUpload(EventDto eventDto, Event event) {
-        MultipartFile imageFile = eventDto.getImageFile();
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                Map<String, Object> uploadResult = cloudinary.uploader().upload(imageFile.getBytes(), ObjectUtils.emptyMap());
-                String imageUrl = uploadResult.get("url").toString();
-                event.setPic(imageUrl);
-                eventDto.setImageUrl(imageUrl);
-                eventRepository.save(event);
-            } catch (IOException e) {
-                throw new RuntimeException("Photo upload failed", e);
-            }
+    public void mapDtoToEntity(EventDto eventDto, Event event) {
+        event.setId(eventDto.getId());
+        event.setName(eventDto.getName());
+        event.setDate(eventDto.getDate());
+//        event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
+//        event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
+        if (eventDto.getStartTime() != null) {
+            event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
         }
+
+        if (eventDto.getEndTime() != null) {
+            event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
+        }
+        event.setDescription(eventDto.getDescription());
+        EventCategory eventCategory = eventCategoryService.findByName(eventDto.getEventCategory());
+        event.setEventCategory(eventCategory);
+        event.setIsFree(eventDto.getIsFree());
+        event.setOrganizer(eventDto.getOrganizer());
+
+        EventLocation location = eventLocationService.findByName(eventDto.getLocation());
+        event.setLocation(location);
+//        Users user = userService.findById(eventDto.getUserId()); // Fetch the user using UserService
+//        event.setUser(user);
     }
 }
 

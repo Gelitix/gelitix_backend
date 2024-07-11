@@ -7,6 +7,7 @@ import java.util.List;
 
 
 public interface EventLocationService {
+
     List<EventLocationDto> getEventLocations();
 
     EventLocation findByName(String name);

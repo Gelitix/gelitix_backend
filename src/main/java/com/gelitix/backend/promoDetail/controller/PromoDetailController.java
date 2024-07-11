@@ -28,9 +28,14 @@ public class PromoDetailController {
         return Response.success(200, "This is the list:",promoDetailService.getPromoDetailsbyEventId(eventId));
     }
 
+//    @GetMapping("/{userId}/{eventId}")
+//    public ResponseEntity<?> getPromoDetailsByUserIdAndEventId(@RequestParam("userId") Long userId, Long eventId) {
+//        return Response.success(200, "This is the list:",promoDetailService.getPromoDetailsbyUserIdAndEventId(userId, eventId));
+//    }
+
     @GetMapping("/{userId}/{eventId}")
-    public ResponseEntity<?> getPromoDetailsByUserIdAndEventId(@RequestParam("userId") Long userId, Long eventId) {
-        return Response.success(200, "This is the list:",promoDetailService.getPromoDetailsbyUserIdAndEventId(userId, eventId));
+    public ResponseEntity<?> getPromoDetailsByUserIdAndEventId(@PathVariable Long userId, @PathVariable Long eventId) {
+        return Response.success(200, "This is the list:", promoDetailService.getPromoDetailsbyUserIdAndEventId(userId, eventId));
     }
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")

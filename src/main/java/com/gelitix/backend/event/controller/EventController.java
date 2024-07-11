@@ -2,7 +2,6 @@ package com.gelitix.backend.event.controller;
 
 import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.event.dto.EventDto;
-import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.response.Response;

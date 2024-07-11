@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -28,8 +29,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Validated RegisterRequestDto registerRequestDto) {
-        String role = registerRequestDto.getRole().name();
+    public ResponseEntity<?> register(@ModelAttribute @Validated RegisterRequestDto registerRequestDto,
+                                      @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+        registerRequestDto.setProfileImage(profileImage);
         Users user = userService.register(registerRequestDto);
         if (user == null) {
             return Response.failed("User registration failed");
@@ -66,6 +68,7 @@ public class UserController {
         return Response.success("User updated successfully", updatedProfile);
     }
 
+    @RolesAllowed("ROLE_USER")
     @DeleteMapping("/delete-profile/{id}")
     public ResponseEntity<?> deleteProfile(@PathVariable Long id) {
         userService.deleteUser(id);

@@ -1,5 +1,6 @@
 package com.gelitix.backend.order.service.impl;
 
+import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.order.dao.EventAttendeeCountDao;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +66,11 @@ public class OrderServiceImpl implements OrderService {
         Long currentUserId = currentUser.getId();
         newOrder.setUser(userService.findById(currentUserId));
 
+        Event chosenEvent = eventService.getEventEntityById(createOrderRequestDto.getEventId());
+        if(chosenEvent == null){
+            throw new IllegalArgumentException("Event not found with id: " + createOrderRequestDto.getEventId());
+        }
+        if(chosenEvent.getDate().isAfter(Instant.now())){throw new IllegalArgumentException("This event has not started yet");};
         newOrder.setEvent(eventService.getEventEntityById(createOrderRequestDto.getEventId()));
 
 
@@ -78,15 +85,20 @@ public class OrderServiceImpl implements OrderService {
         }
         ticketTypeService.deductTicketQuantity(chosenTicketType, createOrderRequestDto.getTicketQuantity());
 
+        BigDecimal price = BigDecimal.valueOf(newOrder.getTicketQuantity()).multiply(chosenTicketType.getPrice());
         BigDecimal discountPercentage = BigDecimal.ZERO;
         if (createOrderRequestDto.getPromoId() != null){
             PromoDetail chosenPromoDetail = promoDetailService.getPromoDetails(createOrderRequestDto.getPromoId()).orElseThrow(()-> new RuntimeException("Promo Doesn't Exist"));
+            if (chosenPromoDetail.getQuantity() == 0){
+                throw new IllegalArgumentException("Promo is already over");
+            }
             newOrder.setPromo(chosenPromoDetail);
+            chosenPromoDetail.setQuantity(chosenPromoDetail.getQuantity()-1);
             discountPercentage = newOrder.getPromo().getDiscount();
-        } else newOrder.setFinalPrice(chosenTicketType.getPrice());
+        } else newOrder.setFinalPrice(price);
 
-        BigDecimal discount = discountPercentage.multiply(chosenTicketType.getPrice()) ;
-        BigDecimal discountPrice = chosenTicketType.getPrice().subtract(discount);
+        BigDecimal discount = discountPercentage.multiply(price) ;
+        BigDecimal discountPrice = price.subtract(discount);
 
         if (createOrderRequestDto.getPointUsed() != null && createOrderRequestDto.getPointUsed().compareTo(currentUser.getPointBalance()) <= 0) {
             newOrder.setFinalPrice(discountPrice.subtract(createOrderRequestDto.getPointUsed()));

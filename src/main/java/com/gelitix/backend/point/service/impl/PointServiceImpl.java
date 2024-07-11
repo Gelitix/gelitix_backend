@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,15 +36,30 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public Point recordPointHistory(Users uplineUser , Users savedUser) {
-
-        int pointAwarded =10000;
+    public Point recordPointHistory(Users uplineUser, Users savedUser) {
+        int pointAwarded = 10000;
+        BigDecimal currentBalance = uplineUser.getPointBalance();
         Point addedPoint = new Point();
         addedPoint.setInviter(uplineUser);
         addedPoint.setInvitee(savedUser);
         addedPoint.setPointsHistory(BigDecimal.valueOf(pointAwarded));
-        return pointRepository.save(addedPoint);
+        addedPoint = pointRepository.save(addedPoint);
+
+        // Convert LocalDateTime to Instant
+        Instant threeMonthsFromNow = LocalDateTime.now().plusMonths(3)
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
+
+        if (addedPoint.getCreatedAt().isBefore(threeMonthsFromNow)) {
+            uplineUser.setPointBalance(uplineUser.getPointBalance().subtract(BigDecimal.valueOf(10000)));
+        }
+        if (currentBalance.compareTo(BigDecimal.valueOf(pointAwarded)) <= 0) {
+            uplineUser.setPointBalance(BigDecimal.ZERO);
+        }
+        return addedPoint;
     }
+
+
     @Override
     public Point deductPointHistory(Users users, BigDecimal pointUsed){
         Point deductedPoint = new Point();

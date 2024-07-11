@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class RegisterRequestDto {
@@ -31,6 +32,9 @@ public class RegisterRequestDto {
 
     @NotBlank(message= "Name is required")
     private String name;
+
+    @Nullable
+    private MultipartFile profileImage;
 
     public Users toEntity() {
         Users users = new Users();

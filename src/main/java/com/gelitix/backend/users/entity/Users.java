@@ -4,14 +4,9 @@ import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.order.entity.Order;
 import com.gelitix.backend.point.entity.Point;
 import com.gelitix.backend.review.entity.Review;
-//import com.gelitix.backend.transaction.entity.Transaction;
-//import com.gelitix.backend.userPromo.entity.UserPromo;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -20,8 +15,7 @@ import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 @Entity
 @SQLRestriction("deleted_at IS NULL")
 @Table(name = "users")

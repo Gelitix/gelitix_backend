@@ -1,5 +1,7 @@
 package com.gelitix.backend.users.service.impl;
 
+import com.gelitix.backend.cloudinary.service.ImageUploadService;
+import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.dto.ProfileDto;
 import com.gelitix.backend.users.dto.RegisterRequestDto;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,11 +25,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PointService pointService;
+    private final ImageUploadService imageUploadService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, @Lazy PointService pointService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,ImageUploadService imageUploadService, @Lazy PointService pointService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.pointService = pointService;
+        this.imageUploadService = imageUploadService;
+
     }
 
     @Override
@@ -37,7 +43,17 @@ public class UserServiceImpl implements UserService {
         Users newUser = user.toEntity();
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setReferralCode(RandomStringGenerator.generateRandomString(6));
+        newUser.setUsername(user.getName());
+        newUser.setCreatedAt(Instant.now());
+        newUser.setUpdatedAt(Instant.now());
         String referredCode= user.getReferredCode();
+
+        MultipartFile profileImage = user.getProfileImage();
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String imageUrl = imageUploadService.uploadImage(profileImage);
+            newUser.setProfilePicture(imageUrl);
+        }
+
         if (referredCode == null || referredCode.isEmpty()) {
             return userRepository.save(newUser);
         }
@@ -130,5 +146,3 @@ public class UserServiceImpl implements UserService {
         userRepository.save(currentUser);
         }
     }
-
-

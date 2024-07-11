@@ -18,12 +18,12 @@ import java.util.Optional;
 public class DashboardServiceImpl implements DashboardService {
     @Lazy
     private final OrderService orderService;
-    private final EventService eventService;
+//    private final EventService eventService;
     private final UserService userService;
 
-    public DashboardServiceImpl(OrderService orderService, EventService eventService, UserService userService) {
+    public DashboardServiceImpl(OrderService orderService, UserService userService) {
         this.orderService = orderService;
-        this.eventService = eventService;
+//        this.eventService = eventService;
         this.userService = userService;
     }
 

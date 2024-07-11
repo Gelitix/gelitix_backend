@@ -5,6 +5,7 @@ import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.order.service.OrderService;
 import com.gelitix.backend.promoDetail.dto.CreatePromoDto;
+import com.gelitix.backend.promoDetail.dto.PromoDetailDto;
 import com.gelitix.backend.promoDetail.entity.PromoDetail;
 import com.gelitix.backend.promoDetail.repository.PromoDetailRepository;
 import com.gelitix.backend.promoDetail.service.PromoDetailService;
@@ -21,19 +22,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PromoDetailServiceImpl implements PromoDetailService {
     private static final Logger log = LoggerFactory.getLogger(PromoDetailServiceImpl.class);
     private final PromoDetailRepository promoDetailRepository;
     private final EventService eventService;
-    private final UserService userService;
     private final OrderService orderService;
 
-    public PromoDetailServiceImpl(PromoDetailRepository promoDetailRepository, EventService eventService, UserService userService, @Lazy OrderService orderService) {
+    public PromoDetailServiceImpl(PromoDetailRepository promoDetailRepository, EventService eventService, @Lazy OrderService orderService) {
         this.promoDetailRepository = promoDetailRepository;
         this.eventService = eventService;
-        this.userService = userService;
         this.orderService = orderService;
     }
 
@@ -75,9 +75,29 @@ public class PromoDetailServiceImpl implements PromoDetailService {
         return  promoDetailRepository.findPromoDetailsByEventId(eventId);
         }
 
+//    @Override
+//    public List<PromoDetail> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId) {
+////        Event currentEvent = eventService.getEventById(eventId);
+//        EventDto currentEvent = eventService.getEventById(eventId);
+//        if(currentEvent.getIsFree()){
+//            log.info("Event {} is free. No promo details applicable.", eventId);
+//            return Collections.emptyList();
+//        }
+//        List<PromoDetail> referralPromo = promoDetailRepository.findPromoDetailByIsReferralAndEventId(true, eventId);
+//        List<PromoDetail> regularPromo = promoDetailRepository.findPromoDetailByIsReferralAndEventId(false, eventId);
+//        List<PromoDetail> availableRegularPromos = regularPromo.stream()
+//                .filter(promo -> promo.getQuantity() > 0)
+//                .toList();
+//
+//        if(orderService.existsOrderWithReferralPromoForUser(userId)){
+//            return availableRegularPromos;
+//        }
+//        List<PromoDetail> allPromos = new ArrayList<>(referralPromo);
+//        allPromos.addAll(availableRegularPromos);
+//        return allPromos;    }
+
     @Override
-    public List<PromoDetail> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId) {
-//        Event currentEvent = eventService.getEventById(eventId);
+    public List<PromoDetailDto> getPromoDetailsbyUserIdAndEventId(Long userId, Long eventId) {
         EventDto currentEvent = eventService.getEventById(eventId);
         if(currentEvent.getIsFree()){
             log.info("Event {} is free. No promo details applicable.", eventId);
@@ -85,12 +105,37 @@ public class PromoDetailServiceImpl implements PromoDetailService {
         }
         List<PromoDetail> referralPromo = promoDetailRepository.findPromoDetailByIsReferralAndEventId(true, eventId);
         List<PromoDetail> regularPromo = promoDetailRepository.findPromoDetailByIsReferralAndEventId(false, eventId);
+        List<PromoDetail> availableRegularPromos = regularPromo.stream()
+                .filter(promo -> promo.getQuantity() > 0)
+                .toList();
+
+        List<PromoDetail> allPromos;
         if(orderService.existsOrderWithReferralPromoForUser(userId)){
-            return regularPromo;
+            allPromos = availableRegularPromos;
+        } else {
+            allPromos = new ArrayList<>(referralPromo);
+            allPromos.addAll(availableRegularPromos);
         }
-        List<PromoDetail> allPromos = new ArrayList<>(referralPromo);
-        allPromos.addAll(regularPromo);
-        return allPromos;    }
+
+        return allPromos.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private PromoDetailDto convertToDto(PromoDetail promoDetail) {
+        PromoDetailDto dto = new PromoDetailDto();
+        dto.setId(promoDetail.getId());
+        dto.setName(promoDetail.getName());
+        dto.setDiscount(promoDetail.getDiscount());
+        dto.setStartValid(promoDetail.getStartValid());
+        dto.setEndValid(promoDetail.getEndValid());
+        dto.setQuantity(promoDetail.getQuantity());
+        dto.setIsReferral(promoDetail.getIsReferral());
+        dto.setEventId(promoDetail.getEvent().getId());
+        return dto;
+    }
+
+
 
     @Override
     public PromoDetail deletePromoDetailsbyEventId(Long id,String email) {
