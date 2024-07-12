@@ -47,6 +47,10 @@ public class UserServiceImpl implements UserService {
         newUser.setUsername(user.getName());
         newUser.setCreatedAt(Instant.now());
         newUser.setUpdatedAt(Instant.now());
+
+        if (user.getReferredCode()== null){
+            newUser.setIsReferred(false);
+        }
         String referredCode= user.getReferredCode();
 
         MultipartFile profileImage = user.getProfileImage();

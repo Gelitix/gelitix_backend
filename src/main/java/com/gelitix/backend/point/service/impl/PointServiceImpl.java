@@ -6,6 +6,7 @@ import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -98,4 +99,13 @@ public class PointServiceImpl implements PointService {
         userService.findById(userId).setPointBalance(pointBalance);
 
    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateAllUserPointBalances() {
+        List<Users> users = userService.findAll(); // Assume this method exists
+
+        for (Users user : users) {
+            updateUserPointBalance(user.getId(),user.getPointBalance());
+        }
+    }
 }
