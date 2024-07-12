@@ -44,7 +44,8 @@ public class UserServiceImpl implements UserService {
         Users newUser = user.toEntity();
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setReferralCode(RandomStringGenerator.generateRandomString(6));
-        newUser.setUsername(user.getName());
+        newUser.setUsername(user.getUsername());
+        newUser.setName(user.getName());
         newUser.setCreatedAt(Instant.now());
         newUser.setUpdatedAt(Instant.now());
 
