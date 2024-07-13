@@ -67,11 +67,11 @@ public class UserServiceImpl implements UserService {
         var uplineUser = uplineUserOpts.get();
 
         List<Point> uplineUserPoint= pointService.findPointsByInviterId(uplineUser.getId());
-        BigDecimal totalPoints = BigDecimal.valueOf(0);
+        BigDecimal totalPoints = BigDecimal.valueOf(10000);
         for (Point point : uplineUserPoint) {
             totalPoints.add(point.getRemainingPoint()) ;
         }
-        uplineUser.setPointBalance(totalPoints);
+        uplineUser.setPointBalance(uplineUser.getPointBalance().add(totalPoints));
 
         userRepository.save(uplineUser);
         newUser.setIsReferred(true);
@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
         pointService.recordPointHistory(uplineUser,savedUser);
 
         return savedUser;
+
     }
 
     @Override

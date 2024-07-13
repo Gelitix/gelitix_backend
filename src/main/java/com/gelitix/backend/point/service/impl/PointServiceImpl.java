@@ -6,6 +6,7 @@ import com.gelitix.backend.point.service.PointService;
 import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.service.UserService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -50,7 +51,7 @@ public class PointServiceImpl implements PointService {
     public Point recordPointHistory(Users uplineUser , Users savedUser) {
 
         int pointAwarded =10000;
-        Instant threeMonthsFromNow = Instant.now().plus(3, ChronoUnit.MONTHS);
+        Instant threeMonthsFromNow = Instant.now().plus(90, ChronoUnit.DAYS);
 
 
         BigDecimal currentBalance = uplineUser.getPointBalance();
@@ -59,7 +60,7 @@ public class PointServiceImpl implements PointService {
         addedPoint.setInvitee(savedUser);
         addedPoint.setPointsHistory(BigDecimal.valueOf(pointAwarded));
         addedPoint.setExpiredAt(Instant.from(threeMonthsFromNow));
-        addedPoint.setRemainingPoint(BigDecimal.valueOf(10000));
+        addedPoint.setRemainingPoint(BigDecimal.valueOf(pointAwarded));
         pointRepository.save(addedPoint);
 //        if (addedPoint.getCreatedAt().isAfter(Instant.from(threeMonthsFromNow)) ){
 //            uplineUser.setPointBalance(uplineUser.getPointBalance().subtract(BigDecimal.valueOf(10000)));
@@ -98,4 +99,13 @@ public class PointServiceImpl implements PointService {
         userService.findById(userId).setPointBalance(pointBalance);
 
    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateAllUserPointBalances() {
+        List<Users> users = userService.findAll(); // Assume this method exists
+
+        for (Users user : users) {
+            updateUserPointBalance(user.getId(),user.getPointBalance());
+        }
+    }
 }

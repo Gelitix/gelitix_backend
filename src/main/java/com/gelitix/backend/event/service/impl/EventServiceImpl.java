@@ -21,12 +21,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 
-
 import org.springframework.data.domain.Pageable;
 import java.time.*;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -70,7 +68,14 @@ public class EventServiceImpl implements EventService {
 
         event.setUser(user);
         event.setCreatedAt(Instant.now());
-        event = getEvent(eventDto, event);
+        event = getEvent(event);
+
+        String imageUrl = imageUploadService.uploadImage(eventDto.getImageFile());
+        if (imageUrl != null) {
+            event.setPic(imageUrl);
+            eventDto.setImageUrl(imageUrl);
+            eventRepository.save(event);
+        }
 
         if (eventDto.getTicketTypes() != null && !eventDto.getTicketTypes().isEmpty()) {
             for (CreateTicketTypeDto ticketTypeDto : eventDto.getTicketTypes()) {
@@ -82,16 +87,10 @@ public class EventServiceImpl implements EventService {
         return mapEntityToDto(event);
     }
 
-    private Event getEvent(EventDto eventDto, Event event) {
+    private Event getEvent(Event event) {
         event.setUpdatedAt(Instant.now());
         event = eventRepository.save(event);
 
-        String imageUrl = imageUploadService.uploadImage(eventDto.getImageFile());
-        if (imageUrl != null) {
-            event.setPic(imageUrl);
-            eventDto.setImageUrl(imageUrl);
-            eventRepository.save(event);
-        }
         return event;
     }
 
@@ -132,7 +131,7 @@ public class EventServiceImpl implements EventService {
         Users existingUser = userService.findById(existingUserId);
         existingEvent.setUser(existingUser);
 
-        existingEvent = getEvent(eventDto, existingEvent);
+        existingEvent = getEvent(existingEvent);
 
         return mapEntityToDto(existingEvent);
     }
