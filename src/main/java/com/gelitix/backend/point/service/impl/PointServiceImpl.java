@@ -51,7 +51,7 @@ public class PointServiceImpl implements PointService {
     public Point recordPointHistory(Users uplineUser , Users savedUser) {
 
         int pointAwarded =10000;
-        Instant threeMonthsFromNow = Instant.now().plus(3, ChronoUnit.MONTHS);
+        Instant threeMonthsFromNow = Instant.now().plus(90, ChronoUnit.DAYS);
 
 
         BigDecimal currentBalance = uplineUser.getPointBalance();
@@ -60,7 +60,7 @@ public class PointServiceImpl implements PointService {
         addedPoint.setInvitee(savedUser);
         addedPoint.setPointsHistory(BigDecimal.valueOf(pointAwarded));
         addedPoint.setExpiredAt(Instant.from(threeMonthsFromNow));
-        addedPoint.setRemainingPoint(BigDecimal.valueOf(10000));
+        addedPoint.setRemainingPoint(BigDecimal.valueOf(pointAwarded));
         pointRepository.save(addedPoint);
 //        if (addedPoint.getCreatedAt().isAfter(Instant.from(threeMonthsFromNow)) ){
 //            uplineUser.setPointBalance(uplineUser.getPointBalance().subtract(BigDecimal.valueOf(10000)));

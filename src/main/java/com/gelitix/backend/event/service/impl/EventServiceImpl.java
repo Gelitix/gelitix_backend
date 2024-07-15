@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class EventServiceImpl implements EventService {
         }
         Event currentEvent = eventRepository.findById(id).get();
         currentEvent.setDeletedAt(Instant.now());
-        eventRepository.delete(currentEvent);
+        eventRepository.save(currentEvent);
     }
 
     @Override
@@ -83,6 +84,7 @@ public class EventServiceImpl implements EventService {
 
         if (eventDto.getTicketTypes() != null && !eventDto.getTicketTypes().isEmpty()) {
             for (CreateTicketTypeDto ticketTypeDto : eventDto.getTicketTypes()) {
+
                 ticketTypeService.createTicketType(ticketTypeDto, event.getId());
             }
         }
@@ -277,6 +279,15 @@ public class EventServiceImpl implements EventService {
         event.setLocation(location);
 //        Users user = userService.findById(eventDto.getUserId()); // Fetch the user using UserService
 //        event.setUser(user);
+    }
+
+    @Override
+    public List<Event> getEventsByUserEmail(String email) {
+       Optional<Users> currentUserOpts = userService.getUserByEmail(email);
+       Users currentUser = currentUserOpts.get();
+       Long currentUserId = currentUser.getId();
+        return eventRepository.findByUserId(currentUserId);
+
     }
 }
 
