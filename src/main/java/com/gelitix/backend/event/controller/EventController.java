@@ -66,6 +66,15 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
+    @GetMapping("/api/v1/list")
+    public ResponseEntity<?> getEventsByUserEmail() {
+        var claims = Claims.getClaimsFromJwt();
+        var email = (String) claims.get("sub");
+    return Response.success(200, "Here's the list of your events", eventService.getEventsByUserEmail(email));
+    }
+
+
+
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @PutMapping("/{id}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @ModelAttribute EventDto eventDto,

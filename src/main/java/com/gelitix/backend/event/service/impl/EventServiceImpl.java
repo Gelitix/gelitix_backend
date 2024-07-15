@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -207,6 +208,15 @@ public class EventServiceImpl implements EventService {
         event.setLocation(location);
 //        Users user = userService.findById(eventDto.getUserId()); // Fetch the user using UserService
 //        event.setUser(user);
+    }
+
+    @Override
+    public List<Event> getEventsByUserEmail(String email) {
+       Optional<Users> currentUserOpts = userService.getUserByEmail(email);
+       Users currentUser = currentUserOpts.get();
+       Long currentUserId = currentUser.getId();
+        return eventRepository.findByUserId(currentUserId);
+
     }
 }
 
