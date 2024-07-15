@@ -4,6 +4,8 @@ import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.Nullable;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class ProfileDto {
 
@@ -24,4 +26,10 @@ public class ProfileDto {
 
         @Nullable
         private String profilePicture;
+
+        @Nullable
+        private BigDecimal pointBalance;
+
+        @Nullable
+        private String referralCode;
 }

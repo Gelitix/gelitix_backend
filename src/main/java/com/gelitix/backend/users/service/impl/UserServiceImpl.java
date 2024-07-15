@@ -103,6 +103,8 @@ public class UserServiceImpl implements UserService {
         profileDto.setProfilePicture(user.getProfilePicture());
         profileDto.setEmail(user.getEmail());
         profileDto.setRole(user.getRole());
+        profileDto.setPointBalance(user.getPointBalance());
+        profileDto.setReferralCode(user.getReferralCode());
 
         return profileDto;
     }
