@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
         for (Point point : uplineUserPoint) {
             totalPoints.add(point.getRemainingPoint()) ;
         }
-        uplineUser.setPointBalance(totalPoints);
+        uplineUser.setPointBalance(uplineUser.getPointBalance().add(totalPoints));
 
         userRepository.save(uplineUser);
         newUser.setIsReferred(true);
@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
         pointService.recordPointHistory(uplineUser,savedUser);
 
         return savedUser;
+
     }
 
     @Override
@@ -105,6 +106,8 @@ public class UserServiceImpl implements UserService {
         profileDto.setProfilePicture(user.getProfilePicture());
         profileDto.setEmail(user.getEmail());
         profileDto.setRole(user.getRole());
+        profileDto.setPointBalance(user.getPointBalance());
+        profileDto.setReferralCode(user.getReferralCode());
 
         return profileDto;
     }
