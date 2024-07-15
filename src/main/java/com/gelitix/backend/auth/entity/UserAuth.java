@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Getter
-public class UserAuth extends Users implements UserDetails {
+public class UserAuth implements UserDetails {
     private final Users user;
 
     public UserAuth(Users user) {

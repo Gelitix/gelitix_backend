@@ -2,6 +2,7 @@ package com.gelitix.backend.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gelitix.backend.response.Response;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.IOException;
 
+@Log
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -22,7 +24,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<?> handleException(Exception ex) {
-        return Response.failed("An unexpected error occurred");
+        ex.printStackTrace();
+        return Response.failed("An unexpected error occurred: " + ex.getMessage());
     }
 
     @ExceptionHandler(JsonProcessingException.class)

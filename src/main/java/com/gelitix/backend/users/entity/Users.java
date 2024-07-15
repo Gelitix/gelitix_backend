@@ -72,16 +72,16 @@ public class Users {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Event> events = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Order> orders = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "invitee")
+    @OneToMany(mappedBy = "invitee",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Point> points = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Review> reviews = new LinkedHashSet<>();
 
 //    @OneToMany(mappedBy = "user")

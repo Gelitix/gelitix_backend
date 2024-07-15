@@ -1,10 +1,12 @@
 package com.gelitix.backend.auth.service.impl;
 
 import com.gelitix.backend.auth.service.AuthService;
+import com.gelitix.backend.users.entity.Users;
 import com.gelitix.backend.users.repository.UserRepository;
 import lombok.extern.java.Log;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log
@@ -32,6 +35,11 @@ public class AuthServiceImpl implements AuthService  {
 
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
+        Optional<Users> user = userRepository.findByEmail(authentication.getName());
+
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("user not found bruh");
+        }
 
         String roles = authentication.getAuthorities()
                 .stream()
@@ -44,7 +52,7 @@ public class AuthServiceImpl implements AuthService  {
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
                 .claim("roles",roles)
-                .claim("userId", userRepository.findByEmail(authentication.getName()).get().getId())
+                .claim("userId", user.get().getId())
                 .build();
 
         log.info("Token Requested for user : " + authentication.getName() + " with roles : " + roles);
