@@ -2,6 +2,7 @@ package com.gelitix.backend.event.controller;
 
 import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.EventNameDto;
 import com.gelitix.backend.event.dto.UpdateEventDto;
 import com.gelitix.backend.event.dto.UpdateEventResponseDto;
 import com.gelitix.backend.event.entity.Event;
@@ -19,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @RestController
@@ -69,14 +72,12 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
-    @GetMapping("/api/v1/list")
+    @GetMapping("/list")
     public ResponseEntity<?> getEventsByUserEmail() {
         var claims = Claims.getClaimsFromJwt();
         var email = (String) claims.get("sub");
     return Response.success(200, "Here's the list of your events", eventService.getEventsByUserEmail(email));
     }
-
-
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @PutMapping("/{id}")
@@ -90,10 +91,17 @@ public class EventController {
         return ResponseEntity.ok(updatedEvent);
     }
 
+    @GetMapping("/names")
+    public ResponseEntity<?> getAllEventNames() {
+        List<EventNameDto> eventNames = eventService.getAllEventNames();
+        return Response.success(200, "OK", eventNames);
+    }
+
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @DeleteMapping("/delete-event/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable("id") Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted successfully");
     }
+
 }

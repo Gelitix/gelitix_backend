@@ -2,6 +2,7 @@ package com.gelitix.backend.event.service.impl;
 
 import com.gelitix.backend.cloudinary.service.ImageUploadService;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.EventNameDto;
 import com.gelitix.backend.event.dto.UpdateEventDto;
 import com.gelitix.backend.event.dto.UpdateEventResponseDto;
 import com.gelitix.backend.event.entity.Event;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -289,6 +289,27 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findByUserId(currentUserId);
 
     }
+
+    @Override
+    public List<Event> findByName(String name) {
+        return eventRepository.getEventByName(name);
+    }
+
+    @Override
+    public List<EventNameDto> getAllEventNames() {
+        return eventRepository.findAll().stream()
+                .map(this::mapToEventNameDto)
+                .collect(Collectors.toList());
+    }
+
+    private EventNameDto mapToEventNameDto(Event event) {
+        EventNameDto dto = new EventNameDto();
+        dto.setId(event.getId());
+        dto.setName(event.getName());
+        return dto;
+    }
+
+
 }
 
 

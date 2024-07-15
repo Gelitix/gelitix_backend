@@ -32,4 +32,9 @@ public interface EventService {
 
     List<Event> getEventsByUserEmail(String email);
 
+    List<Event> findByName(String name);
+
+    List<EventNameDto> getAllEventNames();
+
+
 }
