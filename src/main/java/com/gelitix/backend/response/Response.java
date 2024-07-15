@@ -14,19 +14,25 @@ public class Response<T> {
     private String message;
     private boolean success;
     private T data;
+    private int pageNumber;
 
-    public Response(int statusCode, String message) {
-        this.statusCode = statusCode;
-        this.message = message;
-        this.success = statusCode == HttpStatus.OK.value();
-    }
-
-    public Response(int statusCode, String message, T data) {
+    public Response(int statusCode, String message,T data) {
         this.statusCode = statusCode;
         this.message = message;
         this.success = statusCode == HttpStatus.OK.value();
         this.data = data;
+
     }
+
+    public Response(int statusCode, String message, T data, int pageNumber) {
+        this.statusCode = statusCode;
+        this.message = message;
+        this.success = statusCode == HttpStatus.OK.value();
+        this.data = data;
+        this.pageNumber = pageNumber;
+    }
+
+
 
     public static <T> ResponseEntity<Response<T>> failed(String message) {
         return failed(HttpStatus.BAD_REQUEST.value(), message, null);
@@ -55,7 +61,11 @@ public class Response<T> {
     }
 
     public static <T> ResponseEntity<Response<T>> success(int statusCode, String message, T data) {
-        Response<T> response = new Response<>(statusCode, message, data);
+        return success(HttpStatus.OK.value(), message, data);
+    }
+
+    public static <T> ResponseEntity<Response<T>> success(int statusCode, String message, T data, int pageNumber) {
+        Response<T> response = new Response<>(statusCode, message, data, pageNumber);
         response.setSuccess(true);
         return ResponseEntity.status(statusCode).body(response);
     }

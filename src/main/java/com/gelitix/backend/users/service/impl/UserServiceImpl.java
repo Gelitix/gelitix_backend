@@ -49,9 +49,7 @@ public class UserServiceImpl implements UserService {
         newUser.setCreatedAt(Instant.now());
         newUser.setUpdatedAt(Instant.now());
 
-        if (user.getReferredCode()== null){
-            newUser.setIsReferred(false);
-        }
+
         String referredCode= user.getReferredCode();
 
         MultipartFile profileImage = user.getProfileImage();
@@ -61,6 +59,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (referredCode == null || referredCode.isEmpty()) {
+            newUser.setIsReferred(false);
             return userRepository.save(newUser);
         }
         newUser.setIsReferred(true);
@@ -71,7 +70,7 @@ public class UserServiceImpl implements UserService {
         var uplineUser = uplineUserOpts.get();
 
         List<Point> uplineUserPoint= pointService.findPointsByInviterId(uplineUser.getId());
-        BigDecimal totalPoints = BigDecimal.valueOf(0);
+        BigDecimal totalPoints = BigDecimal.valueOf(10000);
         for (Point point : uplineUserPoint) {
             totalPoints.add(point.getRemainingPoint()) ;
         }

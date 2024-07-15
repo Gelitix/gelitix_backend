@@ -2,6 +2,8 @@ package com.gelitix.backend.event.controller;
 
 import com.gelitix.backend.auth.helpers.Claims;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.UpdateEventDto;
+import com.gelitix.backend.event.dto.UpdateEventResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.response.Response;
@@ -34,14 +36,15 @@ public class EventController {
     @GetMapping
     public ResponseEntity<?> getAllEvents( @RequestParam(required = false) String eventCategory,
                                         @RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(defaultValue = "12") int size,
                                         @RequestParam(required = false, defaultValue = "id") String sort,
                                         @RequestParam(required = false, defaultValue = "asc") String order) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Event> eventPage = eventService.getAllEvents(eventCategory, pageable, order, sort);
+        System.out.println(eventPage);
         Page<EventDto> eventDtoPage = eventPage.map(eventService::mapEntityToDto);
-        return Response.success(200, "OK", eventDtoPage);
+        return Response.success(200, "OK", eventDtoPage.getContent() , eventDtoPage.getTotalPages());
     }
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
@@ -68,13 +71,13 @@ public class EventController {
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")
     @PutMapping("/{id}")
-    public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @ModelAttribute EventDto eventDto,
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @ModelAttribute UpdateEventDto eventDto,
                                                 @RequestParam(value = "image", required = false) MultipartFile imageFile) {
 
         Long userId = Claims.getUserIdFromJwt();
         EventDto existingEvent = eventService.getEventById(id);
         eventDto.setImageFile(imageFile);
-        EventDto updatedEvent = eventService.updateEvent(id, eventDto);
+        UpdateEventResponseDto updatedEvent = eventService.updateEvent(id, eventDto);
         return ResponseEntity.ok(updatedEvent);
     }
 

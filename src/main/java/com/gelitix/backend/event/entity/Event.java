@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@SQLRestriction("deleted_at IS NULL")
+//@SQLRestriction("deleted_at IS NULL")
 @Table(name = "event")
 public class Event {
     @Id
@@ -37,10 +37,10 @@ public class Event {
     private Instant date;
 
     @Column(name = "start")
-    private LocalTime start;
+    private Instant start;
 
     @Column(name = "\"end\"")
-    private LocalTime end;
+    private Instant end;
 
     @Column(name = "pic", length = Integer.MAX_VALUE)
     private String pic;

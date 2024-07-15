@@ -1,8 +1,6 @@
 package com.gelitix.backend.event.service;
 
-import com.gelitix.backend.event.dto.EventDto;
-import com.gelitix.backend.event.dto.EventResponseDto;
-import com.gelitix.backend.event.dto.GetEventByIdResponseDto;
+import com.gelitix.backend.event.dto.*;
 import com.gelitix.backend.event.entity.Event;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +20,7 @@ public interface EventService {
 
     Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort);
 
-    EventDto updateEvent(Long id, EventDto eventDto);
+    UpdateEventResponseDto updateEvent(Long id, UpdateEventDto eventDto);
 
     void deleteEvent(Long id);
 

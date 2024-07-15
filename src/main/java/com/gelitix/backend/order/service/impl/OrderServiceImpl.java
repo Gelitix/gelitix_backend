@@ -109,6 +109,8 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(newOrder);
 
+        pointService.updateUserPointBalance(currentUserId,createOrderRequestDto.getPointUsed());
+
         int orderedTicketQuantity = newOrder.getTicketQuantity();
         ticketTypeService.deductTicketQuantity(chosenTicketType, orderedTicketQuantity);
 

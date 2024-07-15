@@ -2,6 +2,8 @@ package com.gelitix.backend.event.service.impl;
 
 import com.gelitix.backend.cloudinary.service.ImageUploadService;
 import com.gelitix.backend.event.dto.EventDto;
+import com.gelitix.backend.event.dto.UpdateEventDto;
+import com.gelitix.backend.event.dto.UpdateEventResponseDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.repository.EventRepository;
 import com.gelitix.backend.event.service.EventService;
@@ -25,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.*;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -54,7 +57,7 @@ public class EventServiceImpl implements EventService {
         }
         Event currentEvent = eventRepository.findById(id).get();
         currentEvent.setDeletedAt(Instant.now());
-        eventRepository.save(currentEvent);
+        eventRepository.delete(currentEvent);
     }
 
     @Override
@@ -72,9 +75,14 @@ public class EventServiceImpl implements EventService {
         event.setCreatedAt(Instant.now());
         event = getEvent(eventDto, event);
 
+        String imageUrl = imageUploadService.uploadImage(eventDto.getImageFile());
+        if (imageUrl != null) {
+            event.setPic(imageUrl);
+            eventDto.setImageUrl(imageUrl);
+            eventRepository.save(event);}
+
         if (eventDto.getTicketTypes() != null && !eventDto.getTicketTypes().isEmpty()) {
             for (CreateTicketTypeDto ticketTypeDto : eventDto.getTicketTypes()) {
-
                 ticketTypeService.createTicketType(ticketTypeDto, event.getId());
             }
         }
@@ -86,20 +94,16 @@ public class EventServiceImpl implements EventService {
         event.setUpdatedAt(Instant.now());
         event = eventRepository.save(event);
 
-        String imageUrl = imageUploadService.uploadImage(eventDto.getImageFile());
-        if (imageUrl != null) {
-            event.setPic(imageUrl);
-            eventDto.setImageUrl(imageUrl);
-            eventRepository.save(event);
-        }
+
+
         return event;
     }
 
     @Override
     public Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort) {
-        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Sort sortObject = Sort.by(direction, sort);
-        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObject);
+//        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+//        Sort sortObject = Sort.by(direction, sort);
+        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 
         Page<Event> eventPage;
         if (eventCategory != null && !eventCategory.isEmpty()) {
@@ -119,22 +123,87 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventDto updateEvent(Long id, EventDto eventDto) {
+    public UpdateEventResponseDto updateEvent(Long id, UpdateEventDto eventDto) {
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
         // Preserve the existing user ID
         Long existingUserId = existingEvent.getUser().getId();
 
         // Update the event with new data
-        mapDtoToEntity(eventDto, existingEvent);
+        if (eventDto.getName() != null && !eventDto.getName().isEmpty()) {
+            existingEvent.setName(eventDto.getName());
+        }
+
+        if (eventDto.getDate() != null){
+            existingEvent.setDate(eventDto.getDate());
+        }
+
+        if (eventDto.getDescription() != null && !eventDto.getDescription().isEmpty()) {
+            existingEvent.setDescription(eventDto.getDescription());
+        }
+        if (eventDto.getEventCategory() != null && !eventDto.getEventCategory().isEmpty()) {
+            existingEvent.setEventCategory(eventCategoryService.findByName(eventDto.getEventCategory()));
+        }
+        if (eventDto.getEndTime() != null) {
+            existingEvent.setEnd(eventDto.getEndTime());
+        }
+        if (eventDto.getStartTime() != null) {
+            existingEvent.setStart(eventDto.getStartTime());
+        }
+        if (eventDto.getImageUrl() != null && !eventDto.getImageUrl().isEmpty()) {
+            existingEvent.setPic(eventDto.getImageUrl());
+        }
+        if (eventDto.getIsFree() != null) {
+            existingEvent.setIsFree(eventDto.getIsFree());
+        }
+        if (eventDto.getLocation() != null && !eventDto.getLocation().isEmpty()) {
+            existingEvent.setLocation(eventLocationService.findByName(eventDto.getLocation()));
+        }
+        if (eventDto.getOrganizer() != null && !eventDto.getOrganizer().isEmpty()) {
+            existingEvent.setOrganizer(eventDto.getOrganizer());
+        }
+        if (eventDto.getTicketTypes() != null && !eventDto.getTicketTypes().isEmpty()) {
+            Set<TicketType> newTicketTypes = eventDto.getTicketTypes().stream()
+                    .map(this::convertToTicketType)
+                    .collect(Collectors.toSet());
+            existingEvent.setTicketTypes(newTicketTypes);
+        }
 
         // Ensure the user ID remains unchanged
         Users existingUser = userService.findById(existingUserId);
         existingEvent.setUser(existingUser);
 
-        existingEvent = getEvent(eventDto, existingEvent);
 
-        return mapEntityToDto(existingEvent);
+        eventRepository.save(existingEvent);
+
+        UpdateEventResponseDto response = new UpdateEventResponseDto();
+        response.setName(existingEvent.getName());
+        response.setDescription(existingEvent.getDescription());
+        response.setEventCategory(String.valueOf(existingEvent.getEventCategory()));
+        response.setEndTime(existingEvent.getEnd());
+        response.setStartTime(existingEvent.getStart());
+        response.setImageUrl(existingEvent.getPic());
+        response.setUpdateTime(existingEvent.getUpdatedAt());
+        response.setIsFree(existingEvent.getIsFree());
+        response.setLocation(String.valueOf(existingEvent.getLocation()));
+        response.setOrganizer(existingEvent.getOrganizer());
+        response.setUserId(existingUser.getId());
+        return response;
+    }
+
+
+    private TicketType convertToTicketType(CreateTicketTypeDto dto) {
+        TicketType ticketType = new TicketType();
+        if (dto.getName() != null && !dto.getName().isEmpty()) {
+            ticketType.setName(dto.getName());
+        }
+        if (dto.getPrice() != null ){
+            ticketType.setPrice(dto.getPrice());
+        }
+        if(dto.getQuantity() !=null && dto.getQuantity() > 0){
+            ticketType.setQuantity(dto.getQuantity());
+        }
+        return ticketType;
     }
 
     @Override
@@ -152,8 +221,8 @@ public class EventServiceImpl implements EventService {
         eventDto.setId(event.getId());
         eventDto.setName(event.getName());
         eventDto.setDate(event.getDate());
-        eventDto.setStartTime(event.getStart().atDate(LocalDate.now()).toInstant(ZoneOffset.UTC));
-        eventDto.setEndTime(event.getEnd().atDate(LocalDate.now()).toInstant(ZoneOffset.UTC));
+        eventDto.setStartTime(event.getStart());
+        eventDto.setEndTime(event.getEnd());
         eventDto.setDescription(event.getDescription());
         eventDto.setOrganizer(event.getOrganizer());
         eventDto.setLocation(event.getLocation().getName());
@@ -192,11 +261,11 @@ public class EventServiceImpl implements EventService {
 //        event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
 //        event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
         if (eventDto.getStartTime() != null) {
-            event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
+            event.setStart(eventDto.getStartTime());
         }
 
         if (eventDto.getEndTime() != null) {
-            event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
+            event.setEnd(eventDto.getEndTime());
         }
         event.setDescription(eventDto.getDescription());
         EventCategory eventCategory = eventCategoryService.findByName(eventDto.getEventCategory());
