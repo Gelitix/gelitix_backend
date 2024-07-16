@@ -27,4 +27,5 @@ public interface UserService {
 
     Users deductPointBalance (Long userId, BigDecimal usedPoint);
 
+
 }

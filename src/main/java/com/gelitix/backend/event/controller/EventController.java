@@ -76,7 +76,8 @@ public class EventController {
     public ResponseEntity<?> getEventsByUserEmail() {
         var claims = Claims.getClaimsFromJwt();
         var email = (String) claims.get("sub");
-    return Response.success(200, "Here's the list of your events", eventService.getEventsByUserEmail(email));
+        List<EventDto> eventDtos = eventService.getEventsByUserEmail(email);
+        return Response.success(200, "Here's the list of your events", eventDtos);
     }
 
     @RolesAllowed("ROLE_EVENT_ORGANIZER")

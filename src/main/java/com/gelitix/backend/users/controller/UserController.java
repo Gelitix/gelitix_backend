@@ -60,7 +60,7 @@ public class UserController {
 
     @RolesAllowed({"ROLE_EVENT_ORGANIZER", "ROLE_USER"})
     @PutMapping("/update-profile")
-    public ResponseEntity<?> updateProfile(@RequestBody ProfileDto profileDto) {
+    public ResponseEntity<?> updateProfile(@ModelAttribute ProfileDto profileDto) {
         var claims = Claims.getClaimsFromJwt();
         var email = (String) claims.get("sub");
 

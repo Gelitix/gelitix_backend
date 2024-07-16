@@ -96,8 +96,6 @@ public class EventServiceImpl implements EventService {
         event.setUpdatedAt(Instant.now());
         event = eventRepository.save(event);
 
-
-
         return event;
     }
 
@@ -281,14 +279,26 @@ public class EventServiceImpl implements EventService {
 //        event.setUser(user);
     }
 
-    @Override
-    public List<Event> getEventsByUserEmail(String email) {
-       Optional<Users> currentUserOpts = userService.getUserByEmail(email);
-       Users currentUser = currentUserOpts.get();
-       Long currentUserId = currentUser.getId();
-        return eventRepository.findByUserId(currentUserId);
+//    @Override
+//    public List<Event> getEventsByUserEmail(String email) {
+//       Optional<Users> currentUserOpts = userService.getUserByEmail(email);
+//       Users currentUser = currentUserOpts.get();
+//       Long currentUserId = currentUser.getId();
+//        return eventRepository.findByUserId(currentUserId);
+//
+//    }
 
+    @Override
+    public List<EventDto> getEventsByUserEmail(String email) {
+        Optional<Users> currentUserOpts = userService.getUserByEmail(email);
+        Users currentUser = currentUserOpts.orElseThrow(() -> new RuntimeException("User not found"));
+        Long currentUserId = currentUser.getId();
+        List<Event> events = eventRepository.findByUserId(currentUserId);
+        return events.stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<Event> findByName(String name) {
