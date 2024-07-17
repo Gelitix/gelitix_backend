@@ -12,4 +12,5 @@ public interface PointService {
     Point deductPointHistory(Users users, BigDecimal pointUsed);
     List<Point> findPointsByInviterId(Long inviterId);
     void updateUserPointBalance(Long userId , BigDecimal pointUsed);
+    void updateAllUserPointBalances();
 }

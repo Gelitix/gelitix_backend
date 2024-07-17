@@ -99,8 +99,7 @@ public class PointServiceImpl implements PointService {
         userService.findById(userId).setPointBalance(pointBalance);
 
    }
-
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Override
     public void updateAllUserPointBalances() {
         List<Users> users = userService.findAll(); // Assume this method exists
 

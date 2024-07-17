@@ -4,6 +4,7 @@ import com.gelitix.backend.event.dto.EventDto;
 import com.gelitix.backend.event.entity.Event;
 import com.gelitix.backend.event.service.EventService;
 import com.gelitix.backend.ticketType.dto.CreateTicketTypeDto;
+import com.gelitix.backend.ticketType.dto.GetTicketTypeByIdResponseDto;
 import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.ticketType.repository.TicketTypeRepository;
 import com.gelitix.backend.ticketType.service.TicketTypeService;
@@ -28,6 +29,19 @@ public class TicketTypeServiceImpl implements TicketTypeService {
     @Override
     public Optional<TicketType> getTicketTypeById(Long id) {
         return ticketTypeRepository.findById(id);
+    }
+
+    @Override
+    public GetTicketTypeByIdResponseDto getTicketTypeByIdResponse(Long id) {
+        Optional<TicketType> currentTicketTypeOpts = ticketTypeRepository.findById(id);
+        TicketType currentTicketType = currentTicketTypeOpts.get();
+        GetTicketTypeByIdResponseDto resp = new GetTicketTypeByIdResponseDto();
+        resp.setId(currentTicketType.getId());
+        resp.setName(currentTicketType.getName());
+        resp.setEventName(currentTicketType.getEvent().getName());
+        resp.setQuantity(currentTicketType.getQuantity());
+        resp.setPrice(currentTicketType.getPrice());
+        return resp;
     }
 
     @Override

@@ -18,7 +18,7 @@ public interface EventService {
 
 //    List<EventDto> getAllEvents();
 
-    Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort);
+    Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort, String search);
 
     UpdateEventResponseDto updateEvent(Long id, UpdateEventDto eventDto);
 
@@ -32,4 +32,7 @@ public interface EventService {
 
     List<Event> getEventsByUserEmail(String email);
 
+    List<String> findEventNamesByName(String name) ;
+
 }
+

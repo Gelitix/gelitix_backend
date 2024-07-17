@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 @Data
 public class CreateOrderRequestDto {
+
     @NotBlank
     private Integer ticketQuantity;
 

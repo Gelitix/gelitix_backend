@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.Pageable;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -102,14 +103,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort) {
+    public Page<Event> getAllEvents(String eventCategory, Pageable pageable, String order, String sort, String search) {
 //        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
 //        Sort sortObject = Sort.by(direction, sort);
         Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 
         Page<Event> eventPage;
         if (eventCategory != null && !eventCategory.isEmpty()) {
-            eventPage = eventRepository.findByEventCategoryName(eventCategory, pageableWithSort);
+            eventPage = eventRepository.findByEventCategoryName(eventCategory, pageableWithSort, search);
+        } else if (search != null && !search.isEmpty()) {
+            eventPage = eventRepository.findByName(search, pageableWithSort);
         } else {
             eventPage = eventRepository.findAll(pageableWithSort);
         }
@@ -250,6 +253,7 @@ public class EventServiceImpl implements EventService {
 
     public CreateTicketTypeDto mapTicketTypeToDto(TicketType ticketType) {
         CreateTicketTypeDto dto = new CreateTicketTypeDto();
+        dto.setId(ticketType.getId());
         dto.setName(ticketType.getName());
         dto.setPrice(ticketType.getPrice());
         dto.setQuantity(ticketType.getQuantity());
@@ -262,12 +266,12 @@ public class EventServiceImpl implements EventService {
         event.setDate(eventDto.getDate());
 //        event.setStart(LocalTime.ofInstant(eventDto.getStartTime(), ZoneId.systemDefault()));
 //        event.setEnd(LocalTime.ofInstant(eventDto.getEndTime(), ZoneId.systemDefault()));
-        if (eventDto.getStartTime() != null) {
-            event.setStart(eventDto.getStartTime());
-        }
+            if (eventDto.getStartTime() != null) {
+                event.setStart(eventDto.getStartTime());
+            }
 
-        if (eventDto.getEndTime() != null) {
-            event.setEnd(eventDto.getEndTime());
+            if (eventDto.getEndTime() != null) {
+                event.setEnd(eventDto.getEndTime());
         }
         event.setDescription(eventDto.getDescription());
         EventCategory eventCategory = eventCategoryService.findByName(eventDto.getEventCategory());
@@ -289,6 +293,17 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findByUserId(currentUserId);
 
     }
+
+    @Override
+    public List<String> findEventNamesByName(String name) {
+        List<Event> searchResult = eventRepository.findByNameContainingIgnoreCase(name);
+        return searchResult.stream()
+                .map(Event::getName)
+                .limit(10)  // Limit the results to avoid overwhelming the frontend
+                .collect(Collectors.toList());
+    }
+
+
 }
 
 

@@ -26,7 +26,7 @@ public class TicketTypeController {
 
       @GetMapping("/{id}")
     public ResponseEntity<?> getTicketTypeById(@PathVariable Long id) {
-          return Response.success(200,"These are the ticket types", ticketTypeService.getTicketTypeById(id));
+          return Response.success(200,"These are the ticket types", ticketTypeService.getTicketTypeByIdResponse(id));
       }
 
       @PostMapping("")

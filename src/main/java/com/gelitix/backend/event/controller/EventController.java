@@ -38,11 +38,10 @@ public class EventController {
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "12") int size,
                                         @RequestParam(required = false, defaultValue = "id") String sort,
-                                        @RequestParam(required = false, defaultValue = "asc") String order) {
-
+                                        @RequestParam(required = false, defaultValue = "asc") String order,
+                                        @RequestParam(required = false) String search){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Event> eventPage = eventService.getAllEvents(eventCategory, pageable, order, sort);
-        System.out.println(eventPage);
+        Page<Event> eventPage = eventService.getAllEvents(eventCategory, pageable, order, sort, search);
         Page<EventDto> eventDtoPage = eventPage.map(eventService::mapEntityToDto);
         return Response.success(200, "OK", eventDtoPage.getContent() , eventDtoPage.getTotalPages());
     }
@@ -96,4 +95,11 @@ public class EventController {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted successfully");
     }
+
+//    @GetMapping("event-name/{eventName}")
+//    public ResponseEntity<?> findEventNamesByName(@PathVariable("eventName") String eventName) {
+//     return Response.success(200, "OK", eventService.findEventsByName(eventName));
+//    }
+
+
 }

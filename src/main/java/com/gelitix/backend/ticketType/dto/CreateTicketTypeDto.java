@@ -12,6 +12,10 @@ import lombok.Data;
 import java.math.BigDecimal;
 @Data
 public class CreateTicketTypeDto {
+
+    @NotBlank
+    private Long id;
+
     @NotBlank
     private String name;
 
