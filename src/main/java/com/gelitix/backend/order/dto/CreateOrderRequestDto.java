@@ -1,7 +1,9 @@
 package com.gelitix.backend.order.dto;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -21,8 +23,19 @@ public class CreateOrderRequestDto {
     @NotBlank
     private Long ticketTypeId;
 
-//    @Nullable
-//    private Long promoTypeId;
+    @NotBlank
+    private String fullName;
+
+    @NotBlank
+    @Size(max = 20)
+    private String phoneNumber;
+
+    @NotBlank
+    @Size(max = 50)
+    private String email;
+
+    @NotBlank
+    private String identityCard;
 
     @Nullable
     private BigDecimal pointUsed;
