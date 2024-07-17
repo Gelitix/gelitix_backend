@@ -30,7 +30,12 @@ public interface EventService {
 
     void mapDtoToEntity(EventDto eventDto, Event event);
 
-    List<Event> getEventsByUserEmail(String email);
+    List<EventDto> getEventsByUserEmail(String email);
+
+    List<Event> findByName(String name);
+
+    List<EventNameDto> getAllEventNames();
+
 
     List<String> findEventNamesByName(String name) ;
 

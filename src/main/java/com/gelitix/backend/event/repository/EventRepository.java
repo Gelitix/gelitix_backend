@@ -23,4 +23,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE e.name LIKE %:name%")
     Page<Event> findByName(@Param("name") String name, Pageable pageable);
     List<Event> findByNameContainingIgnoreCase(String name);
+
+    List<Event> getEventByName(String name);
 }

@@ -4,9 +4,8 @@ import lombok.Data;
 
 @Data
 public class UpdateProfileResponseDto {
-    private String username;
 
-    private String password;
+    private String name;
 
     private String phoneNumber;
 

@@ -3,6 +3,7 @@ package com.gelitix.backend.users.dto;
 import com.gelitix.backend.users.entity.RoleName;
 import jakarta.annotation.Nullable;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -11,6 +12,9 @@ public class ProfileDto {
 
         @Nullable
         private String username;
+
+        @Nullable
+        private String name;
 
         @Nullable
         private String email;
@@ -32,4 +36,7 @@ public class ProfileDto {
 
         @Nullable
         private String referralCode;
+
+        @Nullable
+        private MultipartFile profileImage;
 }

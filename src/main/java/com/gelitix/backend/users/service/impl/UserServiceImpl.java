@@ -108,6 +108,7 @@ public class UserServiceImpl implements UserService {
         profileDto.setRole(user.getRole());
         profileDto.setPointBalance(user.getPointBalance());
         profileDto.setReferralCode(user.getReferralCode());
+        profileDto.setName(user.getName());
 
         return profileDto;
     }
@@ -135,20 +136,34 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Your account cannot be found");
         }
         Users user = currentProfile.get();
-        user.setUsername(profileDto.getUsername());
-        user.setProfilePicture(profileDto.getProfilePicture());
-        user.setPhoneNumber(profileDto.getPhoneNumber());
-        user.setRole(profileDto.getRole());
+
+        // Update name if provided
+        if (profileDto.getName() != null) {
+            user.setName(profileDto.getName());
+        }
+
+        // Update phone number if provided
+        if (profileDto.getPhoneNumber() != null) {
+            user.setPhoneNumber(profileDto.getPhoneNumber());
+        }
+
+        // Handle profile image update
+        MultipartFile profileImage = profileDto.getProfileImage();
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String imageUrl = imageUploadService.uploadImage(profileImage);
+            user.setProfilePicture(imageUrl);
+        }
+
         userRepository.save(user);
 
         UpdateProfileResponseDto updateProfileResponse = new UpdateProfileResponseDto();
-        updateProfileResponse.setUsername(user.getUsername());
-        updateProfileResponse.setProfilePicture(user.getProfilePicture());
+        updateProfileResponse.setName(user.getName());
         updateProfileResponse.setPhoneNumber(user.getPhoneNumber());
-        updateProfileResponse.setPassword(user.getPassword());
+        updateProfileResponse.setProfilePicture(user.getProfilePicture());
 
         return updateProfileResponse;
     }
+
 
     @Override
     public void deleteUser(Long id) {
