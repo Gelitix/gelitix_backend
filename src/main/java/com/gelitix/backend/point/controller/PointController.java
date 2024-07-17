@@ -29,4 +29,6 @@ public class PointController {
         var email = (String) claims.get("sub");
         return Response.success(200, "This is your point", pointService.getPoint(email) );
     };
-}
+
+
+  }

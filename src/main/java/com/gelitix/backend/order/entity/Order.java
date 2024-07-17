@@ -9,10 +9,13 @@ import com.gelitix.backend.ticketType.entity.TicketType;
 import com.gelitix.backend.users.entity.Users;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -52,5 +55,23 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private Set<Review> reviews = new LinkedHashSet<>();
+
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
+
+    @Column(name = "full_name", length = Integer.MAX_VALUE)
+    private String fullName;
+
+    @Size(max = 20)
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Size(max = 50)
+    @Column(name = "email", length = 50)
+    private String email;
+
+    @Column(name = "identity_card", length = Integer.MAX_VALUE)
+    private String identityCard;
 
 }

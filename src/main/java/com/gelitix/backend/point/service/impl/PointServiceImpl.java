@@ -107,4 +107,9 @@ public class PointServiceImpl implements PointService {
             updateUserPointBalance(user.getId(),user.getPointBalance());
         }
     }
+
+    @Override
+    public List<Point> getPointsByUserId(Long userId) {
+        return List.of();
+    }
 }

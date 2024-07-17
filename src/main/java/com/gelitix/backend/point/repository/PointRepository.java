@@ -18,6 +18,5 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     @Query("SELECT p FROM Point p WHERE p.inviter.id = :userId AND p.expiredAt <= CURRENT_DATE  ORDER BY p.expiredAt ASC")
     List<Point> findAllByUserIdOrderByDateAsc(@Param("userId") Long userId);
 
-
 }
 
