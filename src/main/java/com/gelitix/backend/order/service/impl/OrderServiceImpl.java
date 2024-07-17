@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,12 +71,14 @@ public class OrderServiceImpl implements OrderService {
         if(chosenEvent == null){
             throw new IllegalArgumentException("Event not found with id: " + createOrderRequestDto.getEventId());
         }
-        if(chosenEvent.getDate().isAfter(Instant.now())){throw new IllegalArgumentException("This event has not started yet");};
+//        if(chosenEvent.getDate().isAfter(Instant.now())){throw new IllegalArgumentException("This event has not started yet");};
         newOrder.setEvent(eventService.getEventEntityById(createOrderRequestDto.getEventId()));
 
         newOrder.setFullName(createOrderRequestDto.getFullName());
 
         newOrder.setEmail(createOrderRequestDto.getEmail());
+
+        newOrder.setCreatedAt(Instant.now());
 
         newOrder.setIdentityCard(createOrderRequestDto.getIdentityCard());
 
