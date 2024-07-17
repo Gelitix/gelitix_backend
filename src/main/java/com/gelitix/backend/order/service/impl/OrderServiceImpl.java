@@ -73,6 +73,13 @@ public class OrderServiceImpl implements OrderService {
         if(chosenEvent.getDate().isAfter(Instant.now())){throw new IllegalArgumentException("This event has not started yet");};
         newOrder.setEvent(eventService.getEventEntityById(createOrderRequestDto.getEventId()));
 
+        newOrder.setFullName(createOrderRequestDto.getFullName());
+
+        newOrder.setEmail(createOrderRequestDto.getEmail());
+
+        newOrder.setIdentityCard(createOrderRequestDto.getIdentityCard());
+
+        newOrder.setPhoneNumber(createOrderRequestDto.getPhoneNumber());
 
         Optional<TicketType> chosenTicketTypeOpts = ticketTypeService.getTicketTypeById(createOrderRequestDto.getTicketTypeId());
         TicketType chosenTicketType = chosenTicketTypeOpts.get();
