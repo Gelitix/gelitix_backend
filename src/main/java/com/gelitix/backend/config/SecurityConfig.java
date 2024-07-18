@@ -60,7 +60,7 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 // .cors(AbstractHttpConfigurer::disable) // Uncomment if you want to disable CORS
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/error/**").permitAll();
                     auth.requestMatchers("/api/v1/auth/**").permitAll();
@@ -107,7 +107,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://gelitix-backend-rlb7of4tyq-et.a.run.app","http://localhost:8080","https://gelitix-frontend-seven.vercel.app"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://gelitix-frontend-seven.vercel.app","https://gelitix-frontend-git-main-loqs-projects.vercel.app","https://gelitix-frontend-c9ey1ldvr-loqs-projects.vercel.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
