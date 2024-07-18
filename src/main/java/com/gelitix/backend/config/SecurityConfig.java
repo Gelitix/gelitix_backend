@@ -107,7 +107,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://gelitix-frontend-seven.vercel.app","https://gelitix-frontend-git-main-loqs-projects.vercel.app","https://gelitix-frontend-c9ey1ldvr-loqs-projects.vercel.app"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","https://gelitix-frontend-seven.vercel.app","https://gelitix-frontend-git-main-loqs-projects.vercel.app","https://gelitix-frontend-c9ey1ldvr-loqs-projects.vercel.app","https://gelitix-backend-rlb7of4tyq-et.a.run.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
