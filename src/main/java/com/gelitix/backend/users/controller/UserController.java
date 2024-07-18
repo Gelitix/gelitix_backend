@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
+
+@RolesAllowed({"ROLE_EVENT_ORGANIZER", "ROLE_USER"})
 @RestController
 @RequestMapping("/api/v1/user")
 @Validated
@@ -40,7 +42,7 @@ public class UserController {
         return Response.success("User registered successfully", user);
     }
 
-    @RolesAllowed({"ROLE_EVENT_ORGANIZER", "ROLE_USER"})
+
     @GetMapping("/profile")
     public ResponseEntity<?> profile(ProfileDto profileDto) {
         var claims = Claims.getClaimsFromJwt();

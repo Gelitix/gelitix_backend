@@ -8,7 +8,7 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RolesAllowed("ROLE_EVENT_ORGANIZER")
+@RolesAllowed({"ROLE_EVENT_ORGANIZER", "ROLE_USER"})
 @RestController
 @RequestMapping("api/v1/ticket-type")
 public class TicketTypeController {
